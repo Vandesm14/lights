@@ -1,35 +1,20 @@
 import { Component, render } from 'preact';
-import { useEffect, useState } from 'preact/hooks';
 
-function Item({ evt }: { evt: string }) {
-  const [event, setEvent] = useState('');
+interface ILight {
+  id: number;
+  color: [number, number, number];
+}
 
-  useEffect(function() {
-    setEvent(evt);
-  }, [evt]);
-
-  return <h1>{event}</h1>;
+interface Event {
+  duration: number;
+  payload: {
+    ids: number[];
+  } & Omit<ILight, 'id'>;
 }
 
 class App extends Component {
-  state = {
-    event: '',
-  };
-
-  componentDidMount() {
-    document.addEventListener('keydown', this.trigger);
-  }
-
-  trigger = (e: KeyboardEvent) => {
-    this.setState({ event: e.key });
-  }
-
-  render({}, { event }) {
-    return (
-      <main id="app">
-        <Item evt={event} />
-      </main>
-    );
+  render() {
+    return null;
   }
 }
 
