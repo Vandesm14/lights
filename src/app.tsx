@@ -56,11 +56,7 @@ interface Keybind {
   type: KeybindType;
 }
 
-interface AppState {
-  lights: Light[];
-}
-
-const App = () => {
+const Viewer = () => {
   const fillLights = (height = 8, width = 8, defaultProps?: Partial<Light>) => {
     const lights = [];
     for (let i = 0; i < height; i++) {
@@ -95,21 +91,18 @@ const App = () => {
 
   // TODO: allow custom width & height
   return (
-    <main>
-      <div className="viewer">
-        {lights.map((light) => {
-          return (
-            <div
-              className={`light ${light.selected ? 'selected' : ''}`}
-              style={{
-                backgroundColor: `rgb(${light.color.join(',')})`,
-              }}
-            />
-          );
-        })}
-      </div>
-      {/* <button onClick={() => testPattern.call(this)}>Test Pattern</button> */}
-    </main>
+    <div className="viewer">
+      {lights.map((light) => {
+        return (
+          <div
+            className={`light ${light.selected ? 'selected' : ''}`}
+            style={{
+              backgroundColor: `rgb(${light.color.join(',')})`,
+            }}
+          />
+        );
+      })}
+    </div>
   );
 };
 
@@ -176,6 +169,28 @@ const Editor = () => {
     setLists(newLists);
   };
 
+  const moveCue = (id: Cue['id'], direction: 'up' | 'down') => {
+    const list = getList(selectedList);
+    if (!list) return;
+    const newLists = [...lists];
+    const cueIndex = list.cues.findIndex((cue) => cue.id === id);
+    if (cueIndex === -1) return;
+    const newCues = [...list.cues];
+    if (direction === 'up') {
+      if (cueIndex === 0) return;
+      const temp = newCues[cueIndex - 1];
+      newCues[cueIndex - 1] = newCues[cueIndex];
+      newCues[cueIndex] = temp;
+    } else {
+      if (cueIndex === newCues.length - 1) return;
+      const temp = newCues[cueIndex + 1];
+      newCues[cueIndex + 1] = newCues[cueIndex];
+      newCues[cueIndex] = temp;
+    }
+    newLists.find((list) => list.id === selectedList)!.cues = newCues;
+    setLists(newLists);
+  };
+
   const editCueData = (id: number) => {
     const index = lists[selectedList].cues.findIndex((cue) => cue.id === id);
     return (data: Partial<Cue>) => {
@@ -213,7 +228,7 @@ const Editor = () => {
     };
 
     return (
-      <tr key={cue}>
+      <tr>
         <td class="index">
           {index}
         </td>
@@ -228,13 +243,14 @@ const Editor = () => {
           />
         </td>
         <td>
-          <HexColorPicker
-            color={convert.rgb.hex(cue.color)}
-            onChange={handleColorChange}
-          />
+          <input type="color" onChange={(e) => handleColorChange(e.target.value)} />
         </td>
-        <td>
-          <button onClick={() => removeCue()}>Remove</button>
+        <td class="edit">
+          <div className="hstack">
+            <button onClick={() => removeCue()}>Remove</button>
+            <button onClick={() => moveCue(cue.id, 'up')}>Up</button>
+            <button onClick={() => moveCue(cue.id, 'down')}>Down</button>
+          </div>
         </td>
       </tr>
     );
@@ -244,31 +260,38 @@ const Editor = () => {
     <div className="editor">
       <h1>Cuelists</h1>
       <div className="controls">
-        <select
-          name="selectedList"
-          onChange={(e) => selectList(e)}
-          value={selectedList}
-        >
-          {lists.length === 0 ? (
-            <option value="0" disabled>
-              No Lists
-            </option>
-          ) : (
-            lists.map((list, index) => (
-              <option
-                value={list.id}
-                selected={index === selectedList ? true : null}
-              >
-                {list.name}
+        <div className="hstack">
+          <select
+            name="selectedList"
+            onChange={(e) => selectList(e)}
+            value={selectedList}
+          >
+            {lists.length === 0 ? (
+              <option value="0" disabled>
+                No Lists
               </option>
-            ))
-          )}
-        </select>
-        <button onClick={() => addList()}>Add List</button>
-        {/* FIXME: Remove List doesn't properly set selectedList */}
-        <button onClick={() => removeList(selectedList)}>Remove List</button>
+            ) : (
+              lists.map((list, index) => (
+                <option
+                  value={list.id}
+                  selected={index === selectedList ? true : null}
+                >
+                  {list.name}
+                </option>
+              ))
+            )}
+          </select>
+          <button onClick={() => addList()}>Add List</button>
+          {/* FIXME: Remove List doesn't properly set selectedList */}
+          <button onClick={() => removeList(selectedList)}>Remove List</button>
+        </div>
       </div>
       <h1>Cues</h1>
+      <div className="controls">
+        <div className="hstack">
+          <button onClick={() => addCue()}>Add Cue</button>
+        </div>
+      </div>
       <table>
         <thead>
           <tr>
@@ -276,7 +299,7 @@ const Editor = () => {
             <th>Name</th>
             <th>Duration</th>
             <th>Color</th>
-            <th>Remove</th>
+            <th>Edit</th>
           </tr>
         </thead>
         <tbody>
@@ -292,15 +315,22 @@ const Editor = () => {
               <td colSpan={5}>No cues</td>
             </tr>
           )}
-          <tr>
-            <td colSpan={5}>
-              <button onClick={() => addCue()}>Add Cue</button>
-            </td>
-          </tr>
         </tbody>
       </table>
     </div>
   );
 };
+
+function App() {
+  const [lists, setLists] = useState<CueList[]>([]);
+  const [lights, setLights] = useState<Light[]>([]);
+
+  return (
+    <main>
+      <Viewer lists={lists} lights={lights} />
+      <Editor lists={lists} setLists={setLists} setLights={setLights} />
+    </main>
+  );
+}
 
 render(<Editor />, document.body);
