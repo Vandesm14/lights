@@ -1,7 +1,8 @@
 import { render } from 'preact';
-import { useState } from 'preact/hooks';
+import { useState, useReducer } from 'preact/hooks';
 import 'preact/debug';
 import convert from 'color-convert';
+import { HexColorPicker } from 'react-colorful';
 
 const useBetterState = <T extends object>(
   initialState: T
@@ -113,24 +114,29 @@ const App = () => {
 };
 
 const Editor = () => {
-  const [lists, setLists] = useState<CueList[]>([]);
+  const newCue = (id: number): Cue => {
+    return {
+      id,
+      duration: 0,
+      ids: [],
+      color: [0, 0, 0],
+    };
+  };
+
+  const newList = (id: number, name?: string): CueList => {
+    return {
+      id: id,
+      name: name ?? `New List ${id + 1}`,
+      cues: [newCue(0)],
+    };
+  };
+
+  const [lists, setLists] = useState<CueList[]>([newList(0)]);
   const [selectedList, setSelectedList] = useState(0);
 
   const addList = (name?: string) => {
     setSelectedList(lists.length);
-    setLists([
-      ...lists,
-      {
-        id: lists.length,
-        name: name ?? `New List ${lists.length + 1}`,
-        cues: [{
-          id: 0,
-          duration: 0,
-          ids: [],
-          color: [0, 0, 0],
-        }],
-      },
-    ]);
+    setLists([...lists, newList(lists.length, name)]);
   };
 
   const removeList = (id: CueList['id']) => {
@@ -149,19 +155,95 @@ const Editor = () => {
 
   const getList = (id: CueList['id']) => lists.find((list) => list.id === id);
 
-  const editCueData = (index: number, key: string, value) => {
+  const addCue = () => {
+    const list = getList(selectedList);
+    console.log('addCue', list);
+    if (!list) return;
     const newLists = [...lists];
-    newLists[selectedList].cues[index][key] = value;
+    newLists
+      .find((list) => list.id === selectedList)!
+      .cues.push(newCue(list.cues.length));
     setLists(newLists);
-  }
+  };
+
+  const removeCue = (id: Cue['id']) => {
+    const list = getList(selectedList);
+    if (!list) return;
+    const newLists = [...lists];
+    newLists.find((list) => list.id === selectedList)!.cues = list.cues.filter(
+      (cue) => cue.id !== id
+    );
+    setLists(newLists);
+  };
+
+  const editCueData = (id: number) => {
+    const index = lists[selectedList].cues.findIndex((cue) => cue.id === id);
+    return (data: Partial<Cue>) => {
+      const newLists = [...lists];
+      newLists[selectedList].cues[index] = {
+        ...lists[selectedList].cues[index],
+        ...data,
+      };
+      setLists(newLists);
+    };
+  };
+
+  const CueItem = ({
+    cue,
+    index,
+    editCueData,
+    removeCue,
+  }: {
+    cue: Cue;
+    index: number;
+    editCueData: (data: Partial<Cue>) => void;
+    removeCue: () => void;
+  }) => {
+    const handleNameChange = (e: Event) => {
+      editCueData({ name: (e.target as HTMLInputElement).value });
+    };
+
+    const handleDurationChange = (e: Event) => {
+      editCueData({ duration: parseInt((e.target as HTMLInputElement).value) });
+    };
+
+    const handleColorChange = (raw: string) => {
+      const color = convert.hex.rgb(raw);
+      editCueData({ color });
+    };
+
+    return (
+      <tr key={cue}>
+        <td class="index">
+          {index}
+        </td>
+        <td>
+          <input type="text" value={cue.name} onChange={handleNameChange} />
+        </td>
+        <td>
+          <input
+            type="number"
+            value={cue.duration}
+            onChange={handleDurationChange}
+          />
+        </td>
+        <td>
+          <HexColorPicker
+            color={convert.rgb.hex(cue.color)}
+            onChange={handleColorChange}
+          />
+        </td>
+        <td>
+          <button onClick={() => removeCue()}>Remove</button>
+        </td>
+      </tr>
+    );
+  };
 
   return (
     <div className="editor">
       <h1>Cuelists</h1>
       <div className="controls">
-        <button onClick={() => addList()}>Add List</button>
-        {/* FIXME: Remove List doesn't properly set selectedList */}
-        <button onClick={() => removeList(selectedList)}>Remove List</button>
         <select
           name="selectedList"
           onChange={(e) => selectList(e)}
@@ -172,49 +254,49 @@ const Editor = () => {
               No Lists
             </option>
           ) : (
-            lists.map((list, index) => <option value={list.id} selected={index === selectedList ? true : null}>{list.name}</option>)
+            lists.map((list, index) => (
+              <option
+                value={list.id}
+                selected={index === selectedList ? true : null}
+              >
+                {list.name}
+              </option>
+            ))
           )}
         </select>
+        <button onClick={() => addList()}>Add List</button>
+        {/* FIXME: Remove List doesn't properly set selectedList */}
+        <button onClick={() => removeList(selectedList)}>Remove List</button>
       </div>
       <h1>Cues</h1>
       <table>
         <thead>
           <tr>
+            <th>#</th>
             <th>Name</th>
             <th>Duration</th>
             <th>Color</th>
+            <th>Remove</th>
           </tr>
         </thead>
         <tbody>
           {getList(selectedList)?.cues?.map((cue, index) => (
-            <tr key={cue}>
-              <td>
-                <input
-                  type="text"
-                  value={cue.name}
-                  onChange={(e) => editCueData(index, 'name', (e.target as HTMLInputElement).value)}
-                />
-              </td>
-              <td>
-                <input
-                  type="number"
-                  value={cue.duration}
-                  onChange={(e) => editCueData(index, 'duration', (e.target as HTMLInputElement).value)}
-                />
-              </td>
-              <td>
-                <input
-                  type="color"
-                  value={`rgb(${cue.color.join(',')})`}
-                  onChange={(e) => editCueData(index, 'color', convert.hex.rgb((e.target as HTMLInputElement).value))}
-                />
-              </td>
-            </tr>
+            <CueItem
+              cue={cue}
+              index={index}
+              editCueData={editCueData(cue.id)}
+              removeCue={() => removeCue(cue.id)}
+            />
           )) ?? (
             <tr>
-              <td colSpan={3}>No cues</td>
+              <td colSpan={5}>No cues</td>
             </tr>
           )}
+          <tr>
+            <td colSpan={5}>
+              <button onClick={() => addCue()}>Add Cue</button>
+            </td>
+          </tr>
         </tbody>
       </table>
     </div>
