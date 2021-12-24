@@ -40,19 +40,24 @@ select:focus {
 }
 
 .viewer {
-  display: grid;
-  margin: 0 auto;
-  width: 4rem * 8;
-  height: 100%;
+  width: 100%;
 
-  grid-template-columns: repeat(8, 1fr);
+  .grid {
+    display: grid;
+    margin: 0 auto;
+    width: min-content;
+    height: 100%;
+    grid-template-columns: repeat(8, 1fr);
 
-  .light {
-    width: 4rem;
-    height: 4rem;
+    .light {
+      width: 4rem;
+      height: 4rem;
 
-    &.selected {
-      outline: 2px solid yellow;
+      border: 2px solid black;
+
+      &.selected {
+        border: 2px solid yellow;
+      }
     }
   }
 }
