@@ -13,6 +13,7 @@
     "@parcel/transformer-sass": "^2.0.1"
   },
   "dependencies": {
+    "color-convert": "^2.0.1",
     "parcel": "^2.0.1",
     "preact": "^10.6.4"
   }
