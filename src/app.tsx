@@ -1,9 +1,7 @@
-import { Component, render } from 'preact';
-import { useState, useEffect } from 'preact/hooks';
+import { render } from 'preact';
+import { useState } from 'preact/hooks';
 import 'preact/debug';
 import convert from 'color-convert';
-
-const out = document.getElementById('out');
 
 const useBetterState = <T extends object>(
   initialState: T
