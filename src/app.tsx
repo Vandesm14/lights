@@ -56,40 +56,7 @@ interface Keybind {
   type: KeybindType;
 }
 
-const Viewer = () => {
-  const fillLights = (height = 8, width = 8, defaultProps?: Partial<Light>) => {
-    const lights = [];
-    for (let i = 0; i < height; i++) {
-      for (let j = 0; j < width; j++) {
-        lights.push({
-          id: i * width + j,
-          color: [0, 0, 0],
-          selected: false,
-          ...defaultProps,
-        });
-      }
-    }
-    return lights;
-  };
-
-  const [lights, setLights] = useBetterState<Light[]>(fillLights());
-
-  const transform = (payload: Partial<Light> & { id: Light['id'] }) => {
-    const light = lights.find((el) => el.id === payload.id);
-    let newLight: Light;
-
-    if (light) {
-      newLight = { ...light, ...payload };
-      lights[lights.findIndex((el) => el.id === newLight.id)] = newLight;
-      setLights([...lights]);
-    } else {
-      throw new Error(
-        `Cannot perform transform, light with id: "${payload.id}" not found`
-      );
-    }
-  };
-
-  // TODO: allow custom width & height
+const Viewer = ({ lights }) => {
   return (
     <div className="viewer">
       {lights.map((light) => {
@@ -106,7 +73,7 @@ const Viewer = () => {
   );
 };
 
-const Editor = () => {
+const Editor = ({ lists, setLists }) => {
   const newCue = (id: number): Cue => {
     return {
       id,
@@ -323,14 +290,29 @@ const Editor = () => {
 
 function App() {
   const [lists, setLists] = useState<CueList[]>([]);
-  const [lights, setLights] = useState<Light[]>([]);
+  const [lights, setLights] = useState<Light[]>(()=>fillLights());
+
+  const fillLights = (height = 8, width = 8, defaultProps?: Partial<Light>) => {
+    const lights = [];
+    for (let i = 0; i < height; i++) {
+      for (let j = 0; j < width; j++) {
+        lights.push({
+          id: i * width + j,
+          color: [0, 0, 0],
+          selected: false,
+          ...defaultProps,
+        });
+      }
+    }
+    return lights;
+  };
 
   return (
     <main>
-      <Viewer lists={lists} lights={lights} />
-      <Editor lists={lists} setLists={setLists} setLights={setLights} />
+      <Viewer lights={lights} />
+      <Editor lists={lists} setLists={setLists} />
     </main>
   );
 }
 
-render(<Editor />, document.body);
+render(<App />, document.body);
