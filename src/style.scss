@@ -6,3 +6,20 @@ html, body {
   height: 100%;
   font-family: 'Roboto', sans-serif;
 }
+
+.viewer {
+  width: 4rem * 8;
+  height: 100%;
+  display: grid;
+  grid-template-columns: repeat(8, 1fr);
+  margin: 0 auto;
+
+  .light {
+    width: 4rem;
+    height: 4rem;
+
+    &.selected {
+      outline: 2px solid yellow;
+    }
+  }
+}
