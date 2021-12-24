@@ -22,6 +22,7 @@ interface Light {
 }
 
 interface Cue {
+  id: number;
   duration: number;
   name?: string;
   ids: Light['id'][];
@@ -117,14 +118,30 @@ const Editor = () => {
   const [lists, setLists] = useState<CueList[]>([]);
   const [selectedList, setSelectedList] = useState(0);
 
-  const addList = () => {
-    lists.push({
-      id: lists.length,
-      name: `New List ${lists.length + 1}`,
-      cues: [],
-    });
-    setLists([...lists]);
-    setSelectedList(lists.length - 1);
+  const addList = (name?: string) => {
+    setSelectedList(lists.length);
+    setLists([
+      ...lists,
+      {
+        id: lists.length,
+        name: name ?? `New List ${lists.length + 1}`,
+        cues: [{
+          id: 0,
+          duration: 0,
+          ids: [],
+          color: [0, 0, 0],
+        }],
+      },
+    ]);
+  };
+
+  const removeList = (id: CueList['id']) => {
+    if (lists.length === 0) return;
+    setLists(lists.filter((list) => list.id !== id));
+    if (selectedList === id && lists.length > 0) {
+      const index = lists[lists.findIndex((list) => list.id === id) - 1]?.id;
+      setSelectedList(index > 0 ? index : 0);
+    }
   };
 
   const selectList = (e: Event) => {
@@ -132,20 +149,76 @@ const Editor = () => {
     setSelectedList(selectedList);
   };
 
+  const getList = (id: CueList['id']) => lists.find((list) => list.id === id);
+
+  const editCueData = (index: number, key: string, value) => {
+    const newLists = [...lists];
+    newLists[selectedList].cues[index][key] = value;
+    setLists(newLists);
+  }
+
   return (
     <div className="editor">
+      <h1>Cuelists</h1>
       <div className="controls">
         <button onClick={() => addList()}>Add List</button>
+        {/* FIXME: Remove List doesn't properly set selectedList */}
+        <button onClick={() => removeList(selectedList)}>Remove List</button>
         <select
           name="selectedList"
           onChange={(e) => selectList(e)}
           value={selectedList}
         >
-          {lists.map((list) => (
-            <option value={list.id}>{list.name}</option>
-          ))}
+          {lists.length === 0 ? (
+            <option value="0" disabled>
+              No Lists
+            </option>
+          ) : (
+            lists.map((list, index) => <option value={list.id} selected={index === selectedList ? true : null}>{list.name}</option>)
+          )}
         </select>
       </div>
+      <h1>Cues</h1>
+      <table>
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Duration</th>
+            <th>Color</th>
+          </tr>
+        </thead>
+        <tbody>
+          {getList(selectedList)?.cues?.map((cue, index) => (
+            <tr key={cue}>
+              <td>
+                <input
+                  type="text"
+                  value={cue.name}
+                  onChange={(e) => editCueData(index, 'name', (e.target as HTMLInputElement).value)}
+                />
+              </td>
+              <td>
+                <input
+                  type="number"
+                  value={cue.duration}
+                  onChange={(e) => editCueData(index, 'duration', (e.target as HTMLInputElement).value)}
+                />
+              </td>
+              <td>
+                <input
+                  type="color"
+                  value={`rgb(${cue.color.join(',')})`}
+                  onChange={(e) => editCueData(index, 'color', convert.hex.rgb((e.target as HTMLInputElement).value))}
+                />
+              </td>
+            </tr>
+          )) ?? (
+            <tr>
+              <td colSpan={3}>No cues</td>
+            </tr>
+          )}
+        </tbody>
+      </table>
     </div>
   );
 };
