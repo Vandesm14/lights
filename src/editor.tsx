@@ -54,7 +54,7 @@ const CueItem = ({
   return (
     <tr>
       <td class="index">{index}</td>
-      <td>{cue.ids.length}</td>
+      <td class="index">{cue.ids.length}</td>
       <td>
         <div className="hstack">
           <button onClick={() => viewCueLights(cue.id)}>View</button>
@@ -134,7 +134,6 @@ export const Editor = ({ lists, setLists, runList, lights, setLights }) => {
 
   const moveCue = (id: Cue['id'], direction: 'up' | 'down') => {
     const list = getList(selectedList);
-    console.log('moveCue', id, direction, list);
     if (!list) return;
     const newLists = [...lists];
     const cueIndex = list.cues.findIndex((cue) => cue.id === id);
@@ -151,6 +150,7 @@ export const Editor = ({ lists, setLists, runList, lights, setLights }) => {
       newCues[cueIndex + 1] = newCues[cueIndex];
       newCues[cueIndex] = temp;
     }
+    console.log([...list.cues], [...newCues]);
     newLists.find((list) => list.id === selectedList)!.cues = newCues;
     setLists(newLists);
   };
@@ -209,6 +209,7 @@ export const Editor = ({ lists, setLists, runList, lights, setLights }) => {
           <tr>
             <th>#</th>
             <th>Count</th>
+            <th>Cue</th>
             <th>Name</th>
             <th>Duration</th>
             <th>Color</th>
@@ -224,7 +225,12 @@ export const Editor = ({ lists, setLists, runList, lights, setLights }) => {
               setLists={setLists}
               lights={lights}
               setLights={setLights}
-              lib={{ getList, editCueData: editCueData(cue.id), removeCue, moveCue }}
+              lib={{
+                getList,
+                editCueData: editCueData(cue.id),
+                removeCue,
+                moveCue,
+              }}
             />
           )) ?? (
             <tr>

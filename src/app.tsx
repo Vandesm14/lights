@@ -6,7 +6,6 @@ import { newCue, newList } from './shared';
 import type { Color, Light, Cue, CueList } from './shared';
 import { Editor } from './editor';
 
-
 enum KeybindType {
   /** plays a list and does not wait after the first cue */
   Play = 0,
@@ -132,7 +131,13 @@ function App() {
   return (
     <main>
       <Viewer lights={lights} setLights={setLights} />
-      <Editor lists={lists} setLists={setLists} runList={runList} lights={lights} setLights={setLights} />
+      <Editor
+        lists={lists}
+        setLists={setLists}
+        runList={runList}
+        lights={lights}
+        setLights={setLights}
+      />
     </main>
   );
 }
