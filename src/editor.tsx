@@ -1,8 +1,92 @@
 import { useState, useEffect } from 'preact/hooks';
-import { convert } from 'color-convert';
+import convert from 'color-convert';
 
 import { newCue, newList } from './shared';
 import type { Color, Light, Cue, CueList } from './shared';
+
+const CueItem = ({
+  cue,
+  index,
+  lists,
+  setLists,
+  lights,
+  setLights,
+  lib: { getList, editCueData, removeCue, moveCue },
+}) => {
+  const setCueLights = (id: Cue['id']) => {
+    const cue = getList().cues.find((cue) => cue.id === id);
+    if (!cue) return;
+    const ids = lights
+      .filter((light) => light.selected)
+      .map((light) => light.id);
+    console.log('setCueLights', ids);
+    editCueData({ ...cue, ids });
+    viewCueLights(id);
+  };
+
+  const viewCueLights = (id: Cue['id']) => {
+    const cue = getList().cues.find((cue) => cue.id === id);
+    if (!cue) return;
+    setLights(
+      lights.map((light) => {
+        if (cue.ids.includes(light.id)) {
+          return { ...light, color: cue.color, selected: true };
+        } else {
+          return { ...light, color: [0, 0, 0], selected: false };
+        }
+      })
+    );
+  };
+
+  const handleNameChange = (e: Event) => {
+    editCueData({ name: (e.target as HTMLInputElement).value });
+  };
+
+  const handleDurationChange = (e: Event) => {
+    editCueData({ duration: parseInt((e.target as HTMLInputElement).value) });
+  };
+
+  const handleColorChange = (raw: string) => {
+    editCueData({ color: convert.hex.rgb(raw) });
+    setCueLights(cue.id);
+  };
+
+  return (
+    <tr>
+      <td class="index">{index}</td>
+      <td>{cue.ids.length}</td>
+      <td>
+        <div className="hstack">
+          <button onClick={() => viewCueLights(cue.id)}>View</button>
+          <button onClick={() => setCueLights(cue.id)}>Store</button>
+        </div>
+      </td>
+      <td>
+        <input type="text" value={cue.name} onChange={handleNameChange} />
+      </td>
+      <td>
+        <input
+          type="number"
+          value={cue.duration}
+          onChange={handleDurationChange}
+        />
+      </td>
+      <td>
+        <input
+          type="color"
+          onChange={(e) => handleColorChange(e.target.value)}
+        />
+      </td>
+      <td class="edit">
+        <div className="hstack">
+          <button onClick={() => removeCue()}>Remove</button>
+          <button onClick={() => moveCue(cue.id, 'up')}>Up</button>
+          <button onClick={() => moveCue(cue.id, 'down')}>Down</button>
+        </div>
+      </td>
+    </tr>
+  );
+};
 
 export const Editor = ({ lists, setLists, runList, lights, setLights }) => {
   const [selectedList, setSelectedList] = useState(0);
@@ -37,6 +121,7 @@ export const Editor = ({ lists, setLists, runList, lights, setLights }) => {
       .cues.push(newCue(list.cues.length));
     setLists(newLists);
   };
+
   const removeCue = (id: Cue['id']) => {
     const list = getList();
     if (!list) return;
@@ -46,8 +131,10 @@ export const Editor = ({ lists, setLists, runList, lights, setLights }) => {
     );
     setLists(newLists);
   };
+
   const moveCue = (id: Cue['id'], direction: 'up' | 'down') => {
     const list = getList(selectedList);
+    console.log('moveCue', id, direction, list);
     if (!list) return;
     const newLists = [...lists];
     const cueIndex = list.cues.findIndex((cue) => cue.id === id);
@@ -78,87 +165,6 @@ export const Editor = ({ lists, setLists, runList, lights, setLights }) => {
       };
       setLists(newLists);
     };
-  };
-
-  const CueItem = ({
-    cue,
-    index,
-    editCueData,
-    removeCue,
-  }: {
-    cue: Cue;
-    index: number;
-    editCueData: (data: Partial<Cue>) => void;
-    removeCue: () => void;
-  }) => {
-    const setCueLights = (id: Cue['id']) => {
-      const cue = getList().cues.find((cue) => cue.id === id);
-      if (!cue) return;
-      // set the cue ids to the selected lights using editCueData
-      const ids = lights.filter((light) => light.selected).map((light) => light.id);
-      editCueData({ ids: ids });
-    };
-
-    const viewCueLights = (id: Cue['id']) => {
-      const cue = getList().cues.find((cue) => cue.id === id);
-      if (!cue) return;
-      // set all of the lights to black and then set the selected lights to the cue's color and set them to be "selected"
-      setLights(lights.map((light) => {
-        if (cue.ids.includes(light.id)) {
-          return { ...light, color: cue.color, selected: true };
-        } else {
-          return { ...light, color: [0, 0, 0], selected: false };
-        }
-      }));
-    };
-
-    const handleNameChange = (e: Event) => {
-      editCueData({ name: (e.target as HTMLInputElement).value });
-    };
-
-    const handleDurationChange = (e: Event) => {
-      editCueData({ duration: parseInt((e.target as HTMLInputElement).value) });
-    };
-
-    const handleColorChange = (raw: string) => {
-      editCueData({ color: convert.hex.rgb(raw) });
-      viewCueLights(cue.id);
-    };
-
-    return (
-      <tr>
-        <td class="index">{index}</td>
-        <td>
-          <div className="hstack">
-            <button onClick={() => viewCueLights(cue.id)}>View</button>
-            <button onClick={() => setCueLights(cue.id)}>Store</button>
-          </div>
-        </td>
-        <td>
-          <input type="text" value={cue.name} onChange={handleNameChange} />
-        </td>
-        <td>
-          <input
-            type="number"
-            value={cue.duration}
-            onChange={handleDurationChange}
-          />
-        </td>
-        <td>
-          <input
-            type="color"
-            onChange={(e) => handleColorChange(e.target.value)}
-          />
-        </td>
-        <td class="edit">
-          <div className="hstack">
-            <button onClick={() => removeCue()}>Remove</button>
-            <button onClick={() => moveCue(cue.id, 'up')}>Up</button>
-            <button onClick={() => moveCue(cue.id, 'down')}>Down</button>
-          </div>
-        </td>
-      </tr>
-    );
   };
 
   return (
@@ -202,6 +208,7 @@ export const Editor = ({ lists, setLists, runList, lights, setLights }) => {
         <thead>
           <tr>
             <th>#</th>
+            <th>Count</th>
             <th>Name</th>
             <th>Duration</th>
             <th>Color</th>
@@ -213,8 +220,11 @@ export const Editor = ({ lists, setLists, runList, lights, setLights }) => {
             <CueItem
               cue={cue}
               index={index}
-              editCueData={editCueData(cue.id)}
-              removeCue={() => removeCue(cue.id)}
+              lists={lists}
+              setLists={setLists}
+              lights={lights}
+              setLights={setLights}
+              lib={{ getList, editCueData: editCueData(cue.id), removeCue, moveCue }}
             />
           )) ?? (
             <tr>

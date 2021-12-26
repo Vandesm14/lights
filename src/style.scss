@@ -24,6 +24,10 @@ select {
   color: $text;
 }
 
+input[type="color"] {
+  padding: 0;
+}
+
 button {
   cursor: pointer;
 }

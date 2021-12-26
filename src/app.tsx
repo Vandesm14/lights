@@ -116,8 +116,8 @@ function App() {
         await asyncTimeout(() => {}, 10);
       }
     };
+    if (!!list?.cues) return;
     for (let cue of list.cues) {
-      // the fade the lights from the previous state to the new state over the duration (ms)
       await fade(
         lights,
         lights.filter((light) => cue.ids.includes(light.id)),
