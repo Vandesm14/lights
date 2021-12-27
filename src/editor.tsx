@@ -10,9 +10,12 @@ const CueItem = ({
   index,
   lists,
   setLists,
+  selectedCue,
+  setSelectedCue,
   lights,
   setLights,
-  lib: { getList, editCueData, removeCue, moveCue },
+  selectedList,
+  lib: { getList, editCueData, removeCue },
 }) => {
   const setCueLights = (id: Cue['id']) => {
     const cue = getList().cues.find((cue) => cue.id === id);
@@ -27,6 +30,7 @@ const CueItem = ({
   const viewCueLights = (id: Cue['id']) => {
     const cue = getList().cues.find((cue) => cue.id === id);
     if (!cue) return;
+    setSelectedCue(cue.id);
     setLights(
       lights.map((light) => {
         if (cue.ids.includes(light.id)) {
@@ -51,8 +55,30 @@ const CueItem = ({
     setCueLights(cue.id);
   };
 
+  const moveCue = (id: Cue['id'], direction: 'up' | 'down') => {
+    const list = getList(selectedList);
+    if (!list) return;
+    const newLists = [...lists];
+    const cueIndex = list.cues.findIndex((cue) => cue.id === id);
+    if (cueIndex === -1) return;
+    const newCues = [...list.cues];
+    if (direction === 'up') {
+      if (cueIndex === 0) return;
+      const temp = newCues[cueIndex - 1];
+      newCues[cueIndex - 1] = newCues[cueIndex];
+      newCues[cueIndex] = temp;
+    } else {
+      if (cueIndex === newCues.length - 1) return;
+      const temp = newCues[cueIndex + 1];
+      newCues[cueIndex + 1] = newCues[cueIndex];
+      newCues[cueIndex] = temp;
+    }
+    newLists.find((list) => list.id === selectedList)!.cues = newCues;
+    setLists(newLists);
+  };
+
   return (
-    <tr>
+    <tr class={selectedCue === cue.id ? 'selected' : ''} onClick={()=>viewCueLights(cue.id)}>
       <td class="index">{index}</td>
       <td class="index">{cue.ids.length}</td>
       <td>
@@ -74,7 +100,8 @@ const CueItem = ({
       <td>
         <input
           type="color"
-          onChange={(e) => handleColorChange(e.target.value)}
+          value={'#' + convert.rgb.hex(cue.color)}
+          onInput={(e) => handleColorChange(e.target.value)}
         />
       </td>
       <td class="edit">
@@ -90,6 +117,7 @@ const CueItem = ({
 
 export const Editor = ({ lists, setLists, runList, lights, setLights }) => {
   const [selectedList, setSelectedList] = useState(0);
+  const [selectedCue, setSelectedCue] = useState(0);
 
   const addList = (name?: string) => {
     setSelectedList(lists.length);
@@ -129,28 +157,6 @@ export const Editor = ({ lists, setLists, runList, lights, setLights }) => {
     newLists.find((list) => list.id === selectedList)!.cues = list.cues.filter(
       (cue) => cue.id !== id
     );
-    setLists(newLists);
-  };
-
-  const moveCue = (id: Cue['id'], direction: 'up' | 'down') => {
-    const list = getList(selectedList);
-    if (!list) return;
-    const newLists = [...lists];
-    const cueIndex = list.cues.findIndex((cue) => cue.id === id);
-    if (cueIndex === -1) return;
-    const newCues = [...list.cues];
-    if (direction === 'up') {
-      if (cueIndex === 0) return;
-      const temp = newCues[cueIndex - 1];
-      newCues[cueIndex - 1] = newCues[cueIndex];
-      newCues[cueIndex] = temp;
-    } else {
-      if (cueIndex === newCues.length - 1) return;
-      const temp = newCues[cueIndex + 1];
-      newCues[cueIndex + 1] = newCues[cueIndex];
-      newCues[cueIndex] = temp;
-    }
-    newLists.find((list) => list.id === selectedList)!.cues = newCues;
     setLists(newLists);
   };
 
@@ -223,13 +229,15 @@ export const Editor = ({ lists, setLists, runList, lights, setLights }) => {
               index={index}
               lists={lists}
               setLists={setLists}
+              selectedCue={selectedCue}
+              setSelectedCue={setSelectedCue}
               lights={lights}
               setLights={setLights}
+              selectedList={selectedList}
               lib={{
                 getList,
                 editCueData: editCueData(cue.id),
                 removeCue,
-                moveCue,
               }}
             />
           )) ?? (

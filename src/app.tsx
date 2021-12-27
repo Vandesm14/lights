@@ -1,8 +1,8 @@
 import { render } from 'preact';
-import { useState } from 'preact/hooks';
+import { useState, useReducer } from 'preact/hooks';
 import 'preact/debug';
 
-import { newCue, newList } from './shared';
+import { newList } from './shared';
 import type { Color, Light, Cue, CueList } from './shared';
 import { Editor } from './editor';
 
@@ -80,7 +80,14 @@ function App() {
     return lights;
   };
 
-  const [lists, setLists] = useState<CueList[]>([newList(0)]);
+  const [lists, setLists] = useReducer(
+    (state, action) => {
+      console.log({state, action});
+      localStorage.setItem('lists', JSON.stringify(state));
+      return action;
+    },
+    JSON.parse(localStorage.getItem('lists')) ?? [newList(0)]
+  );
   const [lights, setLights] = useState<Light[]>(fillLights());
 
   const asyncTimeout = (fn: Function, ms: number): Promise<void> => {
