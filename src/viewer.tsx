@@ -2,26 +2,23 @@ import { useState } from 'preact/hooks';
 
 import { Light } from './shared';
 
-export const Viewer = ({ lights, setLights }) => {
-  const [drag, setDrag] = useState(false);
+interface ViewerProps {
+  lights: Light[];
+  setLights: (lights: Light[]) => void;
+}
 
-  const handleSelect = (id: Light['id']) => {
-    setLights(
-      lights.map((light) => {
-        if (light.id === id) {
-          return { ...light, selected: !light.selected };
-        }
-        return light;
-      })
-    );
-  };
+export const Viewer = ({ lights, setLights }: ViewerProps) => {
+  const [drag, setDrag] = useState(false);
+  const [dragState, setDragState] = useState(false);
 
   const handleDragStart = (id: Light['id']) => {
+    const newState = !lights.find(el => el.id === id).selected
+    setDragState(newState);
     setDrag(true);
     setLights(
       lights.map((light) => {
         if (light.id === id) {
-          return { ...light, selected: true };
+          return { ...light, selected: newState };
         }
         return light;
       })
@@ -37,7 +34,7 @@ export const Viewer = ({ lights, setLights }) => {
     setLights(
       lights.map((light) => {
         if (light.id === id) {
-          return { ...light, selected: !light.selected };
+          return { ...light, selected: dragState };
         }
         return light;
       })
@@ -61,7 +58,6 @@ export const Viewer = ({ lights, setLights }) => {
               style={{
                 backgroundColor: `rgb(${light.color.join(',')})`,
               }}
-              onClick={() => handleSelect(light.id)}
               onMouseDown={() => handleDragStart(light.id)}
               onMouseUp={() => handleDragEnd(light.id)}
               onMouseOver={(e) => handleDrag(light.id)}
