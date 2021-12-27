@@ -5,6 +5,7 @@ import { newCue, newList } from './shared';
 import type { Color, Light, Cue, CueList } from './shared';
 
 const CueItem = ({
+  key,
   cue,
   index,
   lists,
@@ -19,7 +20,6 @@ const CueItem = ({
     const ids = lights
       .filter((light) => light.selected)
       .map((light) => light.id);
-    console.log('setCueLights', ids);
     editCueData({ ...cue, ids });
     viewCueLights(id);
   };
@@ -150,7 +150,6 @@ export const Editor = ({ lists, setLists, runList, lights, setLights }) => {
       newCues[cueIndex + 1] = newCues[cueIndex];
       newCues[cueIndex] = temp;
     }
-    console.log([...list.cues], [...newCues]);
     newLists.find((list) => list.id === selectedList)!.cues = newCues;
     setLists(newLists);
   };
@@ -219,6 +218,7 @@ export const Editor = ({ lists, setLists, runList, lights, setLights }) => {
         <tbody>
           {getList(selectedList)?.cues?.map((cue, index) => (
             <CueItem
+              key={cue.id}
               cue={cue}
               index={index}
               lists={lists}
