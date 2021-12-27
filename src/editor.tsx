@@ -5,21 +5,21 @@ import { newCue, newList } from './shared';
 import type { Cue, CueList, Light } from './shared';
 
 interface CueItemProps {
-  key: Cue['id']
-  cue: Cue
-  index: number
-  lists: CueList[]
-  setLists: (lists: CueList[]) => void
-  selectedCue: Cue['id']
-  setSelectedCue: (id: Cue['id']) => void
-  lights: Light[]
-  setLights: (lights: Light[]) => void
-  selectedList: CueList['id']
+  key: Cue['id'];
+  cue: Cue;
+  index: number;
+  lists: CueList[];
+  setLists: (lists: CueList[]) => void;
+  selectedCue: Cue['id'];
+  setSelectedCue: (id: Cue['id']) => void;
+  lights: Light[];
+  setLights: (lights: Light[]) => void;
+  selectedList: CueList['id'];
   lib: {
-    getList: (id?: CueList['id']) => CueList
-    editCueData: (data: Partial<Cue>) => void
-    removeCue: (id: Cue['id']) => void
-  },
+    getList: (id?: CueList['id']) => CueList;
+    editCueData: (data: Partial<Cue>) => void;
+    removeCue: (id: Cue['id']) => void;
+  };
 }
 
 const CueItem = ({
@@ -101,11 +101,14 @@ const CueItem = ({
   }, [selectedList]);
 
   useEffect(() => {
-    viewCueLights(getList()?.cues[selectedCue]?.id)
+    viewCueLights(getList()?.cues[selectedCue]?.id);
   }, [selectedCue]);
 
   return (
-    <tr class={selectedCue === cue.id ? 'selected' : ''} onClick={()=>viewCueLights(cue.id)}>
+    <tr
+      class={selectedCue === cue.id ? 'selected' : ''}
+      onClick={() => viewCueLights(cue.id)}
+    >
       <td class="index">{index}</td>
       <td class="index">{cue.ids.length}</td>
       <td>
@@ -143,15 +146,21 @@ const CueItem = ({
 };
 
 interface EditorProps {
-  lists: CueList[]
-  setLists: (lists: CueList[]) => void
+  lists: CueList[];
+  setLists: (lists: CueList[]) => void;
   // TODO: when runner is done, update this type
-  runList: any
-  lights: Light[]
-  setLights: (lights: Light[]) => void
+  runList: any;
+  lights: Light[];
+  setLights: (lights: Light[]) => void;
 }
 
-export const Editor = ({ lists, setLists, runList, lights, setLights }: EditorProps) => {
+export const Editor = ({
+  lists,
+  setLists,
+  runList,
+  lights,
+  setLights,
+}: EditorProps) => {
   const [selectedList, setSelectedList] = useState(0);
   const [selectedCue, setSelectedCue] = useState(0);
 
@@ -174,7 +183,8 @@ export const Editor = ({ lists, setLists, runList, lights, setLights }: EditorPr
     setSelectedList(selectedList);
   };
 
-  const getList = (id = selectedList): CueList | undefined => lists.find((list) => list.id === id);
+  const getList = (id = selectedList): CueList | undefined =>
+    lists.find((list) => list.id === id);
 
   const addCue = () => {
     const list = getList();
@@ -239,17 +249,37 @@ export const Editor = ({ lists, setLists, runList, lights, setLights }: EditorPr
           <button onClick={() => runList(selectedList)}>Run List</button>
         </div>
         <div className="hstack">
-          <input type="text" value={getList().name} onInput={
-            (e)=>setLists(lists.map((list)=>list.id===selectedList?{...list,name:e.target.value}:list))
-          } />
+          <input
+            type="text"
+            value={getList().name}
+            onInput={(e) =>
+              setLists(
+                lists.map((list) =>
+                  list.id === selectedList
+                    ? { ...list, name: e.target.value }
+                    : list
+                )
+              )
+            }
+          />
         </div>
       </div>
       <h1>Cues</h1>
       <div className="controls">
         <div className="hstack">
           <button onClick={() => addCue()}>Add Cue</button>
-          <button onClick={() => setSelectedCue(Math.max(0, selectedCue - 1))}>Prev</button>
-          <button onClick={() => setSelectedCue(Math.min(getList().cues.length - 1, selectedCue + 1))}>Next</button>
+          <button onClick={() => setSelectedCue(Math.max(0, selectedCue - 1))}>
+            Prev
+          </button>
+          <button
+            onClick={() =>
+              setSelectedCue(
+                Math.min(getList().cues.length - 1, selectedCue + 1)
+              )
+            }
+          >
+            Next
+          </button>
         </div>
       </div>
       <table>

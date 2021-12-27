@@ -12,7 +12,7 @@ export const Viewer = ({ lights, setLights }: ViewerProps) => {
   const [dragState, setDragState] = useState(false);
 
   const handleDragStart = (id: Light['id']) => {
-    const newState = !lights.find(el => el.id === id).selected
+    const newState = !lights.find((el) => el.id === id).selected;
     setDragState(newState);
     setDrag(true);
     setLights(
@@ -22,7 +22,7 @@ export const Viewer = ({ lights, setLights }: ViewerProps) => {
         }
         return light;
       })
-    )
+    );
   };
 
   const handleDragEnd = (id: Light['id']) => {
@@ -61,7 +61,6 @@ export const Viewer = ({ lights, setLights }: ViewerProps) => {
               onMouseDown={() => handleDragStart(light.id)}
               onMouseUp={() => handleDragEnd(light.id)}
               onMouseOver={(e) => handleDrag(light.id)}
-
               onTouchStart={() => handleDragStart(light.id)}
               onTouchEnd={() => handleDragEnd(light.id)}
               onTouchCancel={() => handleDragEnd(light.id)}

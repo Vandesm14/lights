@@ -1,5 +1,5 @@
-import { Cue, CueList, Light, asyncTimeout } from "./shared";
-import type { Color } from "./shared";
+import { Cue, CueList, Light, asyncTimeout } from './shared';
+import type { Color } from './shared';
 
 interface Runner {
   lights: Light[];
