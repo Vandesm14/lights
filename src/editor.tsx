@@ -2,7 +2,25 @@ import { useState, useEffect } from 'preact/hooks';
 import convert from 'color-convert';
 
 import { newCue, newList } from './shared';
-import type { Cue, CueList } from './shared';
+import type { Cue, CueList, Light } from './shared';
+
+interface CueItemProps {
+  key: Cue['id']
+  cue: Cue
+  index: number
+  lists: CueList[]
+  setLists: (lists: CueList[]) => void
+  selectedCue: Cue['id']
+  setSelectedCue: (id: Cue['id']) => void
+  lights: Light[]
+  setLights: (lights: Light[]) => void
+  selectedList: CueList['id']
+  lib: {
+    getList: (id?: CueList['id']) => CueList
+    editCueData: (data: Partial<Cue>) => void
+    removeCue: (id: Cue['id']) => void
+  },
+}
 
 const CueItem = ({
   key,
@@ -16,7 +34,7 @@ const CueItem = ({
   setLights,
   selectedList,
   lib: { getList, editCueData, removeCue },
-}) => {
+}: CueItemProps) => {
   const setCueLights = (id: Cue['id']) => {
     const cue = getList().cues.find((cue) => cue.id === id);
     if (!cue) return;
@@ -115,7 +133,7 @@ const CueItem = ({
       </td>
       <td class="edit">
         <div className="hstack">
-          <button onClick={() => removeCue()}>Remove</button>
+          <button onClick={() => removeCue(cue.id)}>Remove</button>
           <button onClick={() => moveCue(cue.id, 'up')}>Up</button>
           <button onClick={() => moveCue(cue.id, 'down')}>Down</button>
         </div>
@@ -124,7 +142,16 @@ const CueItem = ({
   );
 };
 
-export const Editor = ({ lists, setLists, runList, lights, setLights }) => {
+interface EditorProps {
+  lists: CueList[]
+  setLists: (lists: CueList[]) => void
+  // TODO: when runner is done, update this type
+  runList: any
+  lights: Light[]
+  setLights: (lights: Light[]) => void
+}
+
+export const Editor = ({ lists, setLists, runList, lights, setLights }: EditorProps) => {
   const [selectedList, setSelectedList] = useState(0);
   const [selectedCue, setSelectedCue] = useState(0);
 

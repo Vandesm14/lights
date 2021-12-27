@@ -21,7 +21,7 @@ export interface CueList {
   repeat?: boolean;
 }
 
-enum KeybindType {
+export enum KeybindType {
   /** plays a list and **does not** wait after the first cue */
   Play = 0,
   /** finishes the first cue animation and **waits** */
@@ -38,7 +38,7 @@ enum KeybindType {
   Flash,
 }
 
-interface Keybind {
+export interface Keybind {
   key: KeyboardEvent['key'];
   ids: CueList['id'][];
   type: KeybindType;
