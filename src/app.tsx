@@ -3,7 +3,7 @@ import { useState, useReducer } from 'preact/hooks';
 import 'preact/debug';
 
 import { newList } from './shared';
-import type { Color, Light, Cue, CueList } from './shared';
+import type { Light } from './shared';
 import { Editor } from './editor';
 import { Viewer } from './viewer';
 
@@ -31,52 +31,8 @@ const App = () => {
     },
     JSON.parse(localStorage.getItem('lists')) ?? [newList(0)]
   );
+  // TODO: use a reducer to fade lights between state
   const [lights, setLights] = useState<Light[]>(fillLights());
-
-  const asyncTimeout = (fn: Function, ms: number): Promise<void> => {
-    return new Promise((resolve) => {
-      setTimeout(() => {
-        fn();
-        resolve();
-      }, ms);
-    });
-  };
-
-  const runList = async (list: CueList) => {
-    const fade = async (from: Light[], to: Light[], ms: number) => {
-      const steps = ms / 10;
-      const stepSize = 1 / steps;
-      for (let i = 0; i < steps; i++) {
-        const newLights = from.map((light, index) => ({
-          ...light,
-          color: [
-            Math.round(
-              light.color[0] + (to[index].color[0] - light.color[0]) * stepSize
-            ),
-            Math.round(
-              light.color[1] + (to[index].color[1] - light.color[1]) * stepSize
-            ),
-            Math.round(
-              light.color[2] + (to[index].color[2] - light.color[2]) * stepSize
-            ),
-          ] as Color,
-        }));
-        setLights(newLights);
-        await asyncTimeout(() => {}, 10);
-      }
-    };
-    if (!!list?.cues) return;
-    for (let cue of list.cues) {
-      await fade(
-        lights,
-        lights.filter((light) => cue.ids.includes(light.id)),
-        cue.duration
-      );
-    }
-    if (list.repeat) {
-      runList(list);
-    }
-  };
 
   return (
     <main>
@@ -84,7 +40,8 @@ const App = () => {
       <Editor
         lists={lists}
         setLists={setLists}
-        runList={runList}
+        // TODO: create a runner class to control the different controls of an active show
+        runList={null}
         lights={lights}
         setLights={setLights}
       />

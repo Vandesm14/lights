@@ -2,7 +2,7 @@ import { useState, useEffect } from 'preact/hooks';
 import convert from 'color-convert';
 
 import { newCue, newList } from './shared';
-import type { Color, Light, Cue, CueList } from './shared';
+import type { Cue, CueList } from './shared';
 
 const CueItem = ({
   key,
@@ -79,8 +79,12 @@ const CueItem = ({
 
   // when the list is changed, view the first cue
   useEffect(() => {
-    viewCueLights(getList(0)?.cues[0]?.id);
+    viewCueLights(getList()?.cues[0]?.id);
   }, [selectedList]);
+
+  useEffect(() => {
+    viewCueLights(getList()?.cues[selectedCue]?.id)
+  }, [selectedCue]);
 
   return (
     <tr class={selectedCue === cue.id ? 'selected' : ''} onClick={()=>viewCueLights(cue.id)}>
@@ -143,7 +147,7 @@ export const Editor = ({ lists, setLists, runList, lights, setLights }) => {
     setSelectedList(selectedList);
   };
 
-  const getList = (id = selectedList) => lists.find((list) => list.id === id);
+  const getList = (id = selectedList): CueList | undefined => lists.find((list) => list.id === id);
 
   const addCue = () => {
     const list = getList();
@@ -217,6 +221,8 @@ export const Editor = ({ lists, setLists, runList, lights, setLights }) => {
       <div className="controls">
         <div className="hstack">
           <button onClick={() => addCue()}>Add Cue</button>
+          <button onClick={() => setSelectedCue(Math.max(0, selectedCue - 1))}>Prev</button>
+          <button onClick={() => setSelectedCue(Math.min(getList().cues.length - 1, selectedCue + 1))}>Next</button>
         </div>
       </div>
       <table>

@@ -22,13 +22,15 @@ export interface CueList {
 }
 
 enum KeybindType {
-  /** plays a list and does not wait after the first cue */
+  /** plays a list and **does not** wait after the first cue */
   Play = 0,
-  /** goes to the beginning of a list (plays a list and waits after the first cue) */
+  /** finishes the first cue animation and **waits** */
+  Pause,
+  /** goes to the first cue of the list and **waits** */
   Start,
-  /** goes to the next cue and waits */
+  /** goes to the next cue and **waits** */
   Next,
-  /** goes to the previous cue and waits */
+  /** goes to the previous cue and **waits** */
   Prev,
   /** deactivates the cue and resets the list to its first cue */
   Release,
@@ -57,4 +59,13 @@ export const newList = (id: number, name?: string): CueList => {
     name: name ?? `New List ${id + 1}`,
     cues: [newCue(0)],
   };
+};
+
+export const asyncTimeout = (fn: Function, ms: number): Promise<void> => {
+  return new Promise((resolve) => {
+    setTimeout(() => {
+      fn();
+      resolve();
+    }, ms);
+  });
 };
