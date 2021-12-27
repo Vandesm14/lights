@@ -77,6 +77,11 @@ const CueItem = ({
     setLists(newLists);
   };
 
+  // when the list is changed, view the first cue
+  useEffect(() => {
+    viewCueLights(getList(0)?.cues[0]?.id);
+  }, [selectedList]);
+
   return (
     <tr class={selectedCue === cue.id ? 'selected' : ''} onClick={()=>viewCueLights(cue.id)}>
       <td class="index">{index}</td>

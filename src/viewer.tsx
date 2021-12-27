@@ -18,6 +18,14 @@ export const Viewer = ({ lights, setLights }) => {
 
   const handleDragStart = (id: Light['id']) => {
     setDrag(true);
+    setLights(
+      lights.map((light) => {
+        if (light.id === id) {
+          return { ...light, selected: true };
+        }
+        return light;
+      })
+    )
   };
 
   const handleDragEnd = (id: Light['id']) => {
@@ -54,9 +62,14 @@ export const Viewer = ({ lights, setLights }) => {
                 backgroundColor: `rgb(${light.color.join(',')})`,
               }}
               onClick={() => handleSelect(light.id)}
-              onDragStart={() => handleDragStart(light.id)}
-              onDragEnd={() => handleDragEnd(light.id)}
-              onDrag={(e) => handleDrag(light.id)}
+              onMouseDown={() => handleDragStart(light.id)}
+              onMouseUp={() => handleDragEnd(light.id)}
+              onMouseOver={(e) => handleDrag(light.id)}
+
+              onTouchStart={() => handleDragStart(light.id)}
+              onTouchEnd={() => handleDragEnd(light.id)}
+              onTouchCancel={() => handleDragEnd(light.id)}
+              onTouchMove={(e) => handleDrag(light.id)}
             />
           );
         })}
