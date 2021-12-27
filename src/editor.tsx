@@ -202,6 +202,11 @@ export const Editor = ({ lists, setLists, runList, lights, setLights }) => {
           <button onClick={() => removeList(selectedList)}>Remove List</button>
           <button onClick={() => runList(selectedList)}>Run List</button>
         </div>
+        <div className="hstack">
+          <input type="text" value={getList().name} onInput={
+            (e)=>setLists(lists.map((list)=>list.id===selectedList?{...list,name:e.target.value}:list))
+          } />
+        </div>
       </div>
       <h1>Cues</h1>
       <div className="controls">

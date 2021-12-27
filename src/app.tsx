@@ -5,66 +5,9 @@ import 'preact/debug';
 import { newList } from './shared';
 import type { Color, Light, Cue, CueList } from './shared';
 import { Editor } from './editor';
+import { Viewer } from './viewer';
 
-enum KeybindType {
-  /** plays a list and does not wait after the first cue */
-  Play = 0,
-  /** goes to the beginning of a list (plays a list and waits after the first cue) */
-  Start,
-  /** goes to the next cue and waits */
-  Next,
-  /** goes to the previous cue and waits */
-  Prev,
-  /** deactivates the cue and resets the list to its first cue */
-  Release,
-  /** shows a the first cue of a list as long as the key is held */
-  Flash,
-}
-
-interface Keybind {
-  key: KeyboardEvent['key'];
-  ids: CueList['id'][];
-  type: KeybindType;
-}
-
-const Viewer = ({ lights, setLights }) => {
-  const handleSelect = (id: Light['id']) => {
-    setLights(
-      lights.map((light) => {
-        if (light.id === id) {
-          return { ...light, selected: !light.selected };
-        }
-        return light;
-      })
-    );
-  };
-
-  const selectNone = (e: MouseEvent) => {
-    if (e.target === e.currentTarget) {
-      setLights(lights.map((light) => ({ ...light, selected: false })));
-    }
-  };
-
-  return (
-    <div className="viewer" onClick={selectNone}>
-      <div className="grid">
-        {lights.map((light) => {
-          return (
-            <div
-              className={`light ${light.selected ? 'selected' : ''}`}
-              style={{
-                backgroundColor: `rgb(${light.color.join(',')})`,
-              }}
-              onClick={() => handleSelect(light.id)}
-            />
-          );
-        })}
-      </div>
-    </div>
-  );
-};
-
-function App() {
+const App = () => {
   const fillLights = (height = 8, width = 8, defaultProps?: Partial<Light>) => {
     const lights = [];
     for (let i = 0; i < height; i++) {

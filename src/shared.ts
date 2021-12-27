@@ -21,6 +21,27 @@ export interface CueList {
   repeat?: boolean;
 }
 
+enum KeybindType {
+  /** plays a list and does not wait after the first cue */
+  Play = 0,
+  /** goes to the beginning of a list (plays a list and waits after the first cue) */
+  Start,
+  /** goes to the next cue and waits */
+  Next,
+  /** goes to the previous cue and waits */
+  Prev,
+  /** deactivates the cue and resets the list to its first cue */
+  Release,
+  /** shows a the first cue of a list as long as the key is held */
+  Flash,
+}
+
+interface Keybind {
+  key: KeyboardEvent['key'];
+  ids: CueList['id'][];
+  type: KeybindType;
+}
+
 export const newCue = (id: number): Cue => {
   return {
     id,
