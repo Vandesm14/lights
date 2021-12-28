@@ -117,9 +117,9 @@ const CueItem = ({
           <button onClick={() => setCueLights(cue.id)}>Store</button>
         </div>
       </td>
-      <td>
+      {/* <td>
         <input type="text" value={cue.name} onChange={handleNameChange} />
-      </td>
+      </td> */}
       <td>
         <input
           type="number"
@@ -198,9 +198,7 @@ export const Editor = ({
     const list = getList();
     if (!list) return;
     const newLists = [...lists];
-    newLists
-      .find((list) => list.id === selectedList)!
-      .cues.push(newCue());
+    newLists.find((list) => list.id === selectedList)!.cues.push(newCue());
     setLists(newLists);
   };
 
@@ -279,9 +277,7 @@ export const Editor = ({
           <button
             onClick={() =>
               setSelectedCue(
-                getList().cues[getCueIndex() - 1 < 0
-                  ? 0
-                  : getCueIndex() - 1].id
+                getList().cues[getCueIndex() - 1 < 0 ? 0 : getCueIndex() - 1].id
               )
             }
           >
@@ -290,9 +286,11 @@ export const Editor = ({
           <button
             onClick={() =>
               setSelectedCue(
-                getList().cues[getCueIndex() + 1 > getList().cues.length - 1
-                  ? 0
-                  : getCueIndex() + 1].id
+                getList().cues[
+                  getCueIndex() + 1 > getList().cues.length - 1
+                    ? 0
+                    : getCueIndex() + 1
+                ].id
               )
             }
           >
@@ -306,34 +304,36 @@ export const Editor = ({
             <th>#</th>
             <th>Count</th>
             <th>Cue</th>
-            <th>Name</th>
+            {/* <th>Name</th> */}
             <th>Duration</th>
             <th>Color</th>
             <th>Edit</th>
           </tr>
         </thead>
         <tbody>
-          {getList()?.cues?.map((cue, index) => (
-            <CueItem
-              key={cue.id}
-              cue={cue}
-              index={index}
-              lists={lists}
-              setLists={setLists}
-              selectedCue={selectedCue}
-              setSelectedCue={setSelectedCue}
-              lights={lights}
-              setLights={setLights}
-              selectedList={selectedList}
-              lib={{
-                getList,
-                editCueData: editCueData(cue.id),
-                removeCue,
-              }}
-            />
-          )) ?? (
+          {getList()?.cues?.length > 0 ? (
+            getList()?.cues?.map((cue, index) => (
+              <CueItem
+                key={cue.id}
+                cue={cue}
+                index={index}
+                lists={lists}
+                setLists={setLists}
+                selectedCue={selectedCue}
+                setSelectedCue={setSelectedCue}
+                lights={lights}
+                setLights={setLights}
+                selectedList={selectedList}
+                lib={{
+                  getList,
+                  editCueData: editCueData(cue.id),
+                  removeCue,
+                }}
+              />
+            ))
+          ) : (
             <tr>
-              <td colSpan={5}>No cues</td>
+              <td colSpan={20}>No cues</td>
             </tr>
           )}
         </tbody>
