@@ -27,7 +27,8 @@ export const Viewer = ({ lights, setLights }: ViewerProps) => {
     );
   };
 
-  const handleDragEnd = (id: Light['id'], e: MouseEvent) => {
+  const handleDragEnd = (e: MouseEvent) => {
+    if (e.target !== e.currentTarget) return;
     e.preventDefault();
     setDrag(false);
   };
@@ -45,13 +46,13 @@ export const Viewer = ({ lights, setLights }: ViewerProps) => {
   };
 
   const selectNone = (e: MouseEvent) => {
-    if (e.target === e.currentTarget) {
+    if (e.target === e.currentTarget && !drag) {
       setLights(lights.map((light) => ({ ...light, selected: false })));
     }
   };
 
   return (
-    <div className="viewer" onClick={selectNone}>
+    <div className="viewer" onClick={selectNone} onMouseOut={handleDragEnd}>
       <div className="grid">
         {lights.map((light) => {
           return (
@@ -66,11 +67,11 @@ export const Viewer = ({ lights, setLights }: ViewerProps) => {
                 return false;
               }}
               onMouseDown={(e) => handleDragStart(light.id, e)}
-              onMouseUp={(e) => handleDragEnd(light.id, e)}
+              onMouseUp={handleDragEnd}
               onMouseOver={(e) => handleDrag(light.id)}
               onTouchStart={(e) => handleDragStart(light.id, e)}
-              onTouchEnd={(e) => handleDragEnd(light.id, e)}
-              onTouchCancel={(e) => handleDragEnd(light.id, e)}
+              onTouchEnd={handleDragEnd}
+              onTouchCancel={handleDragEnd}
               onTouchMove={(e) => handleDrag(light.id)}
             />
           );
