@@ -48,7 +48,7 @@ const CueItem = ({
   const viewCueLights = (id: Cue['id']) => {
     const cue = getList().cues.find((cue) => cue.id === id);
     if (!cue) return;
-    setSelectedCue(cue.id);
+    if (selectedCue !== id) setSelectedCue(cue.id);
     setLights(
       lights.map((light) => {
         if (cue.ids.includes(light.id)) {
@@ -74,7 +74,7 @@ const CueItem = ({
   };
 
   const moveCue = (id: Cue['id'], direction: 'up' | 'down') => {
-    const list = getList(selectedList);
+    const list = getList();
     if (!list) return;
     const newLists = [...lists];
     const cueIndex = list.cues.findIndex((cue) => cue.id === id);
@@ -101,7 +101,7 @@ const CueItem = ({
   }, [selectedList]);
 
   useEffect(() => {
-    viewCueLights(getList()?.cues[selectedCue]?.id);
+    viewCueLights(selectedCue);
   }, [selectedCue]);
 
   return (
@@ -161,30 +161,38 @@ export const Editor = ({
   lights,
   setLights,
 }: EditorProps) => {
-  const [selectedList, setSelectedList] = useState(0);
-  const [selectedCue, setSelectedCue] = useState(0);
+  const [selectedList, setSelectedList] = useState(lists[0].id);
+  const [selectedCue, setSelectedCue] = useState(lists[0].cues[0].id);
+
+  const getList = (id = selectedList): CueList | undefined =>
+    lists.find((list) => list.id === id);
+  const getListIndex = (id = selectedList): number =>
+    lists.findIndex((list) => list.id === id);
+
+  const getCue = (id = selectedCue): Cue | undefined =>
+    getList()?.cues.find((cue) => cue.id === id);
+  const getCueIndex = (id = selectedCue): number =>
+    getList()?.cues.findIndex((cue) => cue.id === id);
 
   const addList = (name?: string) => {
-    setSelectedList(lists.length);
-    setLists([...lists, newList(lists.length, name)]);
+    const list = newList(name || `New List ${lists.length + 1}`);
+    setLists([...lists, list]);
+    setSelectedList(list.id);
   };
 
   const removeList = (id: CueList['id']) => {
-    if (lists.length === 0) return;
+    if (lists.length <= 1) return;
     setLists(lists.filter((list) => list.id !== id));
     if (selectedList === id && lists.length > 0) {
-      const index = lists[lists.findIndex((list) => list.id === id) - 1]?.id;
-      setSelectedList(index > 0 ? index : 0);
+      const index = lists[getListIndex(id) - 1]?.id;
+      setSelectedList(index || lists[0].id);
     }
   };
 
   const selectList = (e: Event) => {
-    const selectedList = parseInt((e.target as HTMLInputElement).value);
+    const selectedList = (e.target as HTMLInputElement).value;
     setSelectedList(selectedList);
   };
-
-  const getList = (id = selectedList): CueList | undefined =>
-    lists.find((list) => list.id === id);
 
   const addCue = () => {
     const list = getList();
@@ -192,7 +200,7 @@ export const Editor = ({
     const newLists = [...lists];
     newLists
       .find((list) => list.id === selectedList)!
-      .cues.push(newCue(list.cues.length));
+      .cues.push(newCue());
     setLists(newLists);
   };
 
@@ -206,11 +214,11 @@ export const Editor = ({
     setLists(newLists);
   };
 
-  const editCueData = (id: number) => {
-    const index = getList().cues.findIndex((cue) => cue.id === id);
+  const editCueData = (id: Cue['id']) => {
+    const index = getCueIndex(id);
     return (data: Partial<Cue>) => {
       const newLists = [...lists];
-      newLists[selectedList].cues[index] = {
+      newLists[getListIndex()].cues[index] = {
         ...getList().cues[index],
         ...data,
       };
@@ -233,10 +241,10 @@ export const Editor = ({
                 No Lists
               </option>
             ) : (
-              lists.map((list, index) => (
+              lists.map((list) => (
                 <option
                   value={list.id}
-                  selected={index === selectedList ? true : null}
+                  selected={list.id === selectedList ? true : null}
                 >
                   {list.name}
                 </option>
@@ -268,13 +276,23 @@ export const Editor = ({
       <div className="controls">
         <div className="hstack">
           <button onClick={() => addCue()}>Add Cue</button>
-          <button onClick={() => setSelectedCue(Math.max(0, selectedCue - 1))}>
+          <button
+            onClick={() =>
+              setSelectedCue(
+                getList().cues[getCueIndex() - 1 < 0
+                  ? 0
+                  : getCueIndex() - 1].id
+              )
+            }
+          >
             Prev
           </button>
           <button
             onClick={() =>
               setSelectedCue(
-                Math.min(getList().cues.length - 1, selectedCue + 1)
+                getList().cues[getCueIndex() + 1 > getList().cues.length - 1
+                  ? 0
+                  : getCueIndex() + 1].id
               )
             }
           >
@@ -295,7 +313,7 @@ export const Editor = ({
           </tr>
         </thead>
         <tbody>
-          {getList(selectedList)?.cues?.map((cue, index) => (
+          {getList()?.cues?.map((cue, index) => (
             <CueItem
               key={cue.id}
               cue={cue}

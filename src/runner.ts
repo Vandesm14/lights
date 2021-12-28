@@ -23,7 +23,7 @@ class Runner {
   }
 
   /** fades the lights from the previous state to the current state */
-  private async tick() {
+  private async tick(explicit = false) {
     const fade = async (from: Light[], to: Light[], ms = this.defaultMs) => {
       const steps = ms / 10;
       const stepSize = 1 / steps;
@@ -58,8 +58,8 @@ class Runner {
 
   /** plays a list and **does not** wait after the first cue */
   async play() {
-    this.run();
     this.running = true;
+    this.run();
   }
 
   /** finishes the first cue animation and **waits** */
@@ -70,30 +70,30 @@ class Runner {
   /** goes to the first cue of the list and **waits** */
   async start() {
     this.index = 0;
-    await this.tick();
     this.running = false;
+    await this.tick();
   }
 
   /** goes to the next cue and **waits** */
   async next() {
     this.index = this.index + 1 < this.cues.length ? this.index + 1 : 0;
-    await this.tick();
     this.running = false;
+    await this.tick();
   }
 
   /** goes to the previous cue and **waits** */
   async prev() {
     this.index = this.index - 1 >= 0 ? this.index - 1 : this.cues.length - 1;
-    await this.tick();
     this.running = false;
+    await this.tick();
   }
 
   /** deactivates the cue and resets the list to its first cue */
   async release() {
     this.index = 0;
+    this.running = false;
     await this.tick();
     await this.blackout();
-    this.running = false;
   }
 
   /** shows a the first cue of a list as long as the key is held */

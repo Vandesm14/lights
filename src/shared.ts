@@ -1,3 +1,5 @@
+import uuid from 'uuid';
+
 export type Color = [number, number, number];
 
 export interface Light {
@@ -7,7 +9,7 @@ export interface Light {
 }
 
 export interface Cue {
-  id: number;
+  id: string;
   duration: number;
   name?: string;
   ids: Light['id'][];
@@ -15,7 +17,7 @@ export interface Cue {
 }
 
 export interface CueList {
-  id: number;
+  id: string;
   name: string;
   cues: Cue[];
   repeat?: boolean;
@@ -44,7 +46,8 @@ export interface Keybind {
   type: KeybindType;
 }
 
-export const newCue = (id: number): Cue => {
+export const newCue = (): Cue => {
+  const id = uuid.v4();
   return {
     id,
     duration: 0,
@@ -53,11 +56,12 @@ export const newCue = (id: number): Cue => {
   };
 };
 
-export const newList = (id: number, name?: string): CueList => {
+export const newList = (name?: string): CueList => {
+  const id = uuid.v4();
   return {
-    id: id,
+    id,
     name: name ?? `New List ${id + 1}`,
-    cues: [newCue(0)],
+    cues: [newCue()],
   };
 };
 

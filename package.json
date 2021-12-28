@@ -14,9 +14,11 @@
   },
   "dependencies": {
     "@types/color-convert": "^2.0.0",
+    "@types/uuid": "^8.3.3",
     "color-convert": "^2.0.1",
     "parcel": "^2.0.1",
     "preact": "^10.6.4",
-    "react-colorful": "^5.5.1"
+    "react-colorful": "^5.5.1",
+    "uuid": "^3.4.0"
   }
 }

@@ -24,10 +24,9 @@ const App = () => {
   };
 
   const [lists, setLists] = useReducer((state, action) => {
-    console.log({ state, action });
     localStorage.setItem('lists', JSON.stringify(state));
     return action;
-  }, JSON.parse(localStorage.getItem('lists')) ?? [newList(0)]);
+  }, JSON.parse(localStorage.getItem('lists')) ?? [newList('New List')]);
   // TODO: use a reducer to fade lights between state
   const [lights, setLights] = useState<Light[]>(fillLights());
 

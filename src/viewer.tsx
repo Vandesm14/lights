@@ -11,21 +11,24 @@ export const Viewer = ({ lights, setLights }: ViewerProps) => {
   const [drag, setDrag] = useState(false);
   const [dragState, setDragState] = useState(false);
 
-  const handleDragStart = (id: Light['id']) => {
-    const newState = !lights.find((el) => el.id === id).selected;
-    setDragState(newState);
+  const handleDragStart = (id: Light['id'], e: MouseEvent) => {
+    e.preventDefault();
+    if (e.button === 1) return;
+    const isLeftClick = e.button === 0;
+    setDragState(isLeftClick);
     setDrag(true);
     setLights(
       lights.map((light) => {
         if (light.id === id) {
-          return { ...light, selected: newState };
+          return { ...light, selected: isLeftClick };
         }
         return light;
       })
     );
   };
 
-  const handleDragEnd = (id: Light['id']) => {
+  const handleDragEnd = (id: Light['id'], e: MouseEvent) => {
+    e.preventDefault();
     setDrag(false);
   };
 
@@ -58,12 +61,16 @@ export const Viewer = ({ lights, setLights }: ViewerProps) => {
               style={{
                 backgroundColor: `rgb(${light.color.join(',')})`,
               }}
-              onMouseDown={() => handleDragStart(light.id)}
-              onMouseUp={() => handleDragEnd(light.id)}
+              onContextMenu={(e) => {
+                e.preventDefault();
+                return false;
+              }}
+              onMouseDown={(e) => handleDragStart(light.id, e)}
+              onMouseUp={(e) => handleDragEnd(light.id, e)}
               onMouseOver={(e) => handleDrag(light.id)}
-              onTouchStart={() => handleDragStart(light.id)}
-              onTouchEnd={() => handleDragEnd(light.id)}
-              onTouchCancel={() => handleDragEnd(light.id)}
+              onTouchStart={(e) => handleDragStart(light.id, e)}
+              onTouchEnd={(e) => handleDragEnd(light.id, e)}
+              onTouchCancel={(e) => handleDragEnd(light.id, e)}
               onTouchMove={(e) => handleDrag(light.id)}
             />
           );
