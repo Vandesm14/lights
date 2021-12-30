@@ -72,10 +72,7 @@ export const Viewer = ({ view, setView }: ViewerProps) => {
       className="viewer"
       onClick={selectNone}
       onMouseOut={handleDragEnd}
-      onContextMenu={(e) => {
-        e.preventDefault();
-        return false;
-      }}
+      onContextMenu={(e) => e.preventDefault()}
     >
       <div className="grid">
         {liveLights.map((light) => {
