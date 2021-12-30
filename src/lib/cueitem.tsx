@@ -127,7 +127,7 @@ export const CueItem = ({
             min="0"
             step="1"
           />
-          <button onClick={() => handleDurationChange(defaultMs.toString())}>Reset</button>
+          <button onClick={() => handleDurationChange(defaultMs.toString())}>Default</button>
         </div>
       </td>
       <td>
