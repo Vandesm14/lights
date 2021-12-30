@@ -24,8 +24,8 @@ export interface CueList {
 }
 
 export interface View {
-  live: Light[];
-  edit: Light[];
+  live: Cue[];
+  edit: Cue[];
 }
 
 export enum KeybindType {

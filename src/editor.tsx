@@ -14,6 +14,8 @@ interface CueItemProps {
   setSelectedCue: (id: Cue['id']) => void;
   lights: Light[];
   setLights: (lights: Light[]) => void;
+  view: View;
+  setView: (view: View) => void;
   selectedList: CueList['id'];
   lib: {
     getList: (id?: CueList['id']) => CueList;
@@ -32,6 +34,8 @@ const CueItem = ({
   setSelectedCue,
   lights,
   setLights,
+  view,
+  setView,
   selectedList,
   lib: { getList, editCueData, removeCue },
 }: CueItemProps) => {
@@ -49,15 +53,7 @@ const CueItem = ({
     const cue = getList().cues.find((cue) => cue.id === id);
     if (!cue) return;
     if (selectedCue !== id) setSelectedCue(cue.id);
-    setLights(
-      lights.map((light) => {
-        if (cue.ids.includes(light.id)) {
-          return { ...light, color: cue.color, selected: true };
-        } else {
-          return { ...light, color: [0, 0, 0], selected: false };
-        }
-      })
-    );
+    setView({ ...view, edit: [cue] })
   };
 
   const handleNameChange = (e: Event) => {
@@ -162,6 +158,8 @@ export const Editor = ({
   runList,
   lights,
   setLights,
+  view,
+  setView,
 }: EditorProps) => {
   const [selectedList, setSelectedList] = useState(lists[0].id);
   const [selectedCue, setSelectedCue] = useState(lists[0].cues[0].id);
@@ -309,6 +307,7 @@ export const Editor = ({
             {/* <th>Name</th> */}
             <th>Duration</th>
             <th>Color</th>
+            {/* <th>Type</th> */}
             <th>Edit</th>
           </tr>
         </thead>
@@ -325,6 +324,8 @@ export const Editor = ({
                 setSelectedCue={setSelectedCue}
                 lights={lights}
                 setLights={setLights}
+                view={view}
+                setView={setView}
                 selectedList={selectedList}
                 lib={{
                   getList,

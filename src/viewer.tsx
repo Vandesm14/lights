@@ -1,6 +1,7 @@
-import { useState } from 'preact/hooks';
+import { useEffect, useReducer, useState } from 'preact/hooks';
 
 import { Light, View } from './shared';
+import { linear } from './fade';
 
 interface ViewerProps {
   lights: Light[];
@@ -8,9 +9,19 @@ interface ViewerProps {
   view: View;
 }
 
-export const Viewer = ({ lights, setLights }: ViewerProps) => {
+export const Viewer = ({ lights, setLights, view }: ViewerProps) => {
   const [drag, setDrag] = useState(false);
   const [dragState, setDragState] = useState(false);
+  const [liveLights, setLiveLights] = useState(lights);
+
+  const fadeLinear = linear(liveLights, setLiveLights);
+
+  useEffect(() => {
+    if (view.edit[0]) {
+      const newLights = lights.map(el => view.edit[0].ids.includes(el.id) ? { ...el, color: view.edit[0].color } : el);
+      fadeLinear([...newLights], view.edit[0].duration);
+    }
+  }, [view.edit[0]]);
 
   const handleDragStart = (id: Light['id'], e: MouseEvent) => {
     e.preventDefault();
@@ -19,7 +30,7 @@ export const Viewer = ({ lights, setLights }: ViewerProps) => {
     setDragState(isLeftClick);
     setDrag(true);
     setLights(
-      lights.map((light) => {
+      liveLights.map((light) => {
         if (light.id === id) {
           return { ...light, selected: isLeftClick };
         }
@@ -37,7 +48,7 @@ export const Viewer = ({ lights, setLights }: ViewerProps) => {
   const handleDrag = (id: Light['id']) => {
     if (!drag) return;
     setLights(
-      lights.map((light) => {
+      liveLights.map((light) => {
         if (light.id === id) {
           return { ...light, selected: dragState };
         }
@@ -48,14 +59,14 @@ export const Viewer = ({ lights, setLights }: ViewerProps) => {
 
   const selectNone = (e: MouseEvent) => {
     if (e.target === e.currentTarget && !drag) {
-      setLights(lights.map((light) => ({ ...light, selected: false })));
+      setLights(liveLights.map((light) => ({ ...light, selected: false })));
     }
   };
 
   return (
     <div className="viewer" onClick={selectNone} onMouseOut={handleDragEnd}>
       <div className="grid">
-        {lights.map((light) => {
+        {liveLights.map((light) => {
           return (
             <div
               key={light.id}
