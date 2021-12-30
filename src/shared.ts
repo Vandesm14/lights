@@ -1,4 +1,5 @@
 import uuid from 'uuid';
+import { defaultMs } from './fade';
 
 export type Color = [number, number, number];
 
@@ -50,6 +51,12 @@ export interface Keybind {
   key: KeyboardEvent['key'];
   ids: CueList['id'][];
   type: KeybindType;
+  raw: {
+    key: KeyboardEvent['key'];
+    shiftKey: boolean;
+    ctrlKey: boolean;
+    altKey: boolean;
+  };
 }
 
 export const newCue = (): Cue => {
@@ -78,6 +85,12 @@ export const newKeybind = (): Keybind => {
     key: '',
     ids: [],
     type: KeybindType.Play,
+    raw: {
+      key: '',
+      shiftKey: false,
+      ctrlKey: false,
+      altKey: false,
+    },
   };
 };
 

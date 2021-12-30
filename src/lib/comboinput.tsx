@@ -2,6 +2,24 @@ import type { Keybind } from '../shared';
 
 import { useState } from 'preact/hooks';
 
+const raw = (e?: KeyboardEvent) => {
+  if (e) {
+    return {
+      key: e.key,
+      shiftKey: e.shiftKey,
+      ctrlKey: e.ctrlKey,
+      altKey: e.altKey,
+    }
+  } else {
+    return {
+      key: '',
+      shiftKey: false,
+      ctrlKey: false,
+      altKey: false,
+    }
+  }
+};
+
 interface ComboInputProps {
   keybind: Keybind;
   keybinds: Keybind[];
@@ -27,12 +45,12 @@ export const ComboInput = ({ keybind, keybinds, setKeybinds }: ComboInputProps) 
       } else {
         setValue(val);
         setError('');
-        setKeybinds(keybinds.map((el) => el.id === keybind.id ? { ...el, key: val } : el));
+        setKeybinds(keybinds.map((el) => el.id === keybind.id ? { ...el, key: val, raw: raw(e) } : el));
       }
     } else {
       setValue('');
       setError('');
-      setKeybinds(keybinds.map((el) => el.id === keybind.id ? { ...el, key: '' } : el));
+      setKeybinds(keybinds.map((el) => el.id === keybind.id ? { ...el, key: '', raw: raw() } : el));
     }
   };
 
