@@ -134,7 +134,7 @@ const CueItem = ({
           onInput={(e) => handleColorChange(e.target.value)}
         />
       </td>
-      <td class="edit">
+      <td>
         <div className="hstack">
           <button onClick={() => removeCue(cue.id)}>Remove</button>
           <button onClick={() => moveCue(cue.id, 'up')}>Up</button>

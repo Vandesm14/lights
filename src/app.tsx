@@ -26,7 +26,7 @@ const App = () => {
 
   const [lists, setLists]: [CueList[], (lists: CueList[]) => void] = useReducer(
     (state, action) => {
-      localStorage.setItem('lists', JSON.stringify(state));
+      localStorage.setItem('lists', JSON.stringify(action));
       return action;
     },
     JSON.parse(localStorage.getItem('lists')) ?? [newList('New List')]
@@ -36,7 +36,7 @@ const App = () => {
 
   const [keybinds, setKeybinds]: [Keybind[], (keybinds: Keybind[]) => void] =
     useReducer((state, action) => {
-      localStorage.setItem('keybinds', JSON.stringify(state));
+      localStorage.setItem('keybinds', JSON.stringify(action));
       return action;
     }, JSON.parse(localStorage.getItem('keybinds')) ?? []);
 
@@ -52,7 +52,11 @@ const App = () => {
           lights={lights}
           setLights={setLights}
         />
-        <KeyEditor keybinds={keybinds} setKeybinds={setKeybinds} />
+        <KeyEditor
+          keybinds={keybinds}
+          setKeybinds={setKeybinds}
+          lists={lists}
+        />
       </div>
     </main>
   );

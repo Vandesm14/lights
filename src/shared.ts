@@ -41,6 +41,7 @@ export enum KeybindType {
 }
 
 export interface Keybind {
+  id: string;
   key: KeyboardEvent['key'];
   ids: CueList['id'][];
   type: KeybindType;
@@ -62,6 +63,16 @@ export const newList = (name?: string): CueList => {
     id,
     name: name ?? `New List ${id + 1}`,
     cues: [newCue()],
+  };
+};
+
+export const newKeybind = (): Keybind => {
+  const id = uuid.v4();
+  return {
+    id,
+    key: '',
+    ids: [],
+    type: KeybindType.Play,
   };
 };
 
