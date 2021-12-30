@@ -3,6 +3,7 @@ import convert from 'color-convert';
 
 import { newCue, newList, View } from './shared';
 import type { Cue, CueList, Light } from './shared';
+import { defaultMs } from './fade';
 
 interface CueItemProps {
   key: Cue['id'];
@@ -61,7 +62,9 @@ const CueItem = ({
   };
 
   const handleDurationChange = (e: Event) => {
-    editCueData({ duration: parseInt((e.target as HTMLInputElement).value) });
+    let value = parseInt((e.target as HTMLInputElement).value);
+    if (isNaN(value)) value = defaultMs;
+    editCueData({ duration: value });
   };
 
   const handleColorChange = (raw: string) => {
@@ -121,6 +124,8 @@ const CueItem = ({
           type="number"
           value={cue.duration}
           onChange={handleDurationChange}
+          min="0"
+          step="1"
         />
       </td>
       <td>

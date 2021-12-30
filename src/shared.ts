@@ -56,7 +56,7 @@ export const newCue = (): Cue => {
   const id = uuid.v4();
   return {
     id,
-    duration: 0,
+    duration: defaultMs,
     ids: [],
     color: [0, 0, 0],
   };

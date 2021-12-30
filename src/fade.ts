@@ -1,6 +1,6 @@
 import { asyncTimeout, Color, Light } from './shared';
 
-const defaultMs = 100;
+export const defaultMs = 100;
 
 export const linear = (lights: Light[], setLights: (lights: Light[]) => void) => {
   return async (to: Light[], ms = defaultMs) => {
