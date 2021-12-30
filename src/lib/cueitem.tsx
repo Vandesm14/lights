@@ -12,8 +12,6 @@ export interface CueItemProps {
   setLists: (lists: CueList[]) => void;
   selectedCue: Cue['id'];
   setSelectedCue: (id: Cue['id']) => void;
-  lights: Light[];
-  setLights: (lights: Light[]) => void;
   view: View;
   setView: (view: View) => void;
   selectedList: CueList['id'];
@@ -25,15 +23,12 @@ export interface CueItemProps {
 }
 
 export const CueItem = ({
-  key,
   cue,
   index,
   lists,
   setLists,
   selectedCue,
   setSelectedCue,
-  lights,
-  setLights,
   view,
   setView,
   selectedList,
@@ -42,9 +37,7 @@ export const CueItem = ({
   const setCueLights = (id: Cue['id']) => {
     const cue = getList().cues.find((cue) => cue.id === id);
     if (!cue) return;
-    const ids = lights
-      .filter((light) => light.selected)
-      .map((light) => light.id);
+    const ids = view.edit.ids;
     editCueData({ ...cue, ids });
     viewCueLights(id);
   };
@@ -53,7 +46,7 @@ export const CueItem = ({
     const cue = getList().cues.find((cue) => cue.id === id);
     if (!cue) return;
     if (selectedCue !== id) setSelectedCue(cue.id);
-    setView({ ...view, edit: [cue] });
+    setView({ ...view, edit: cue });
   };
 
   const handleNameChange = (e: Event) => {
@@ -127,7 +120,9 @@ export const CueItem = ({
             min="0"
             step="1"
           />
-          <button onClick={() => handleDurationChange(defaultMs.toString())}>Default</button>
+          <button onClick={() => handleDurationChange(defaultMs.toString())}>
+            Default
+          </button>
         </div>
       </td>
       <td>

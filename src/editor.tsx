@@ -9,8 +9,6 @@ interface EditorProps {
   setLists: (lists: CueList[]) => void;
   // TODO: when runner is done, update this type
   runList: any;
-  lights: Light[];
-  setLights: (lights: Light[]) => void;
   view: View;
   setView: (view: View) => void;
 }
@@ -19,8 +17,6 @@ export const Editor = ({
   lists,
   setLists,
   runList,
-  lights,
-  setLights,
   view,
   setView,
 }: EditorProps) => {
@@ -185,8 +181,6 @@ export const Editor = ({
                 setLists={setLists}
                 selectedCue={selectedCue}
                 setSelectedCue={setSelectedCue}
-                lights={lights}
-                setLights={setLights}
                 view={view}
                 setView={setView}
                 selectedList={selectedList}

@@ -26,7 +26,7 @@ export interface CueList {
 
 export interface View {
   live: Cue[];
-  edit: Cue[];
+  edit: Cue;
 }
 
 export enum KeybindType {
@@ -58,6 +58,25 @@ export interface Keybind {
     altKey: boolean;
   };
 }
+
+export const fillLights = (
+  height = 8,
+  width = 8,
+  defaultProps?: Partial<Light>
+) => {
+  const lights = [];
+  for (let i = 0; i < height; i++) {
+    for (let j = 0; j < width; j++) {
+      lights.push({
+        id: i * width + j,
+        color: [0, 0, 0],
+        selected: false,
+        ...defaultProps,
+      });
+    }
+  }
+  return lights;
+};
 
 export const newCue = (): Cue => {
   const id = uuid.v4();

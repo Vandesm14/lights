@@ -1,32 +1,31 @@
 import { useEffect, useState } from 'preact/hooks';
 
-import { Light, View } from './shared';
+import { fillLights, Light, View } from './shared';
 import { linear } from './fade';
 
 interface ViewerProps {
-  lights: Light[];
-  setLights: (lights: Light[]) => void;
   view: View;
+  setView: (view: View) => void;
 }
 
-export const Viewer = ({ lights, setLights, view }: ViewerProps) => {
+export const Viewer = ({ view, setView }: ViewerProps) => {
   const [drag, setDrag] = useState(false);
   const [dragState, setDragState] = useState(false);
-  const [liveLights, setLiveLights] = useState(lights);
+  const [liveLights, setLiveLights] = useState(fillLights());
 
   const fadeLinear = linear(liveLights, setLiveLights);
 
   useEffect(() => {
-    if (view.edit[0]) {
-      const newLights = lights.map((el) =>
-        view.edit[0].ids.includes(el.id)
-          ? { ...el, color: view.edit[0].color }
-          : el
+    if (view.edit) {
+      const newLights = liveLights.map((el) =>
+        view.edit.ids.includes(el.id)
+          ? { ...el, color: view.edit.color }
+          : { ...el, color: [0, 0, 0] }
       );
       // TODO: if this is already running, cancel it and start a new one
-      fadeLinear([...newLights], view.edit[0].duration);
+      fadeLinear([...newLights], view.edit.duration);
     }
-  }, [view.edit[0]]);
+  }, [view.edit]);
 
   const handleDragStart = (id: Light['id'], e: MouseEvent) => {
     e.preventDefault();
@@ -34,14 +33,14 @@ export const Viewer = ({ lights, setLights, view }: ViewerProps) => {
     const isLeftClick = e.button === 0;
     setDragState(isLeftClick);
     setDrag(true);
-    setLights(
-      liveLights.map((light) => {
-        if (light.id === id) {
-          return { ...light, selected: isLeftClick };
-        }
-        return light;
-      })
-    );
+    if (isLeftClick) {
+      setView({ ...view, edit: { ...view.edit, ids: [...view.edit.ids, id] } });
+    } else {
+      setView({
+        ...view,
+        edit: { ...view.edit, ids: view.edit.ids.filter((i) => i !== id) },
+      });
+    }
   };
 
   const handleDragEnd = (e: MouseEvent) => {
@@ -52,36 +51,42 @@ export const Viewer = ({ lights, setLights, view }: ViewerProps) => {
 
   const handleDrag = (id: Light['id']) => {
     if (!drag) return;
-    setLights(
-      liveLights.map((light) => {
-        if (light.id === id) {
-          return { ...light, selected: dragState };
-        }
-        return light;
-      })
-    );
+    if (dragState) {
+      setView({ ...view, edit: { ...view.edit, ids: [...view.edit.ids, id] } });
+    } else {
+      setView({
+        ...view,
+        edit: { ...view.edit, ids: view.edit.ids.filter((i) => i !== id) },
+      });
+    }
   };
 
   const selectNone = (e: MouseEvent) => {
     if (e.target === e.currentTarget && !drag) {
-      setLights(liveLights.map((light) => ({ ...light, selected: false })));
+      setView({ ...view, edit: { ...view.edit, ids: [] } });
     }
   };
 
   return (
-    <div className="viewer" onClick={selectNone} onMouseOut={handleDragEnd}>
+    <div
+      className="viewer"
+      onClick={selectNone}
+      onMouseOut={handleDragEnd}
+      onContextMenu={(e) => {
+        e.preventDefault();
+        return false;
+      }}
+    >
       <div className="grid">
         {liveLights.map((light) => {
           return (
             <div
               key={light.id}
-              className={`light ${light.selected ? 'selected' : ''}`}
+              className={`light ${
+                view.edit.ids.includes(light.id) ? 'selected' : ''
+              }`}
               style={{
                 backgroundColor: `rgb(${light.color.join(',')})`,
-              }}
-              onContextMenu={(e) => {
-                e.preventDefault();
-                return false;
               }}
               onMouseDown={(e) => handleDragStart(light.id, e)}
               onMouseUp={handleDragEnd}

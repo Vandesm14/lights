@@ -56,6 +56,7 @@ select:focus {
 
 .viewer {
   width: 100%;
+  padding-top: 1rem;
 
   .grid {
     display: grid;
@@ -75,6 +76,12 @@ select:focus {
 
       &.selected {
         border: 2px solid yellow;
+      }
+
+      &.active {
+        &::before {
+          border: 2px solid red;
+        }
       }
     }
   }
