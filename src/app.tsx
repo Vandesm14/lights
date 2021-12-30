@@ -2,7 +2,7 @@ import { render } from 'preact';
 import { useState, useReducer } from 'preact/hooks';
 import 'preact/debug';
 
-import { KeybindType, newList } from './shared';
+import { Cue, KeybindType, newList, View } from './shared';
 import type { CueList, Light, Keybind } from './shared';
 import { Editor } from './editor';
 import { Viewer } from './viewer';
@@ -31,31 +31,34 @@ const App = () => {
     },
     JSON.parse(localStorage.getItem('lists')) ?? [newList('New List')]
   );
-  // TODO: use a reducer to fade lights between state
   const [lights, setLights] = useState<Light[]>(fillLights());
-
   const [keybinds, setKeybinds]: [Keybind[], (keybinds: Keybind[]) => void] =
     useReducer((state, action) => {
       localStorage.setItem('keybinds', JSON.stringify(action));
       return action;
     }, JSON.parse(localStorage.getItem('keybinds')) ?? []);
 
+  const [view, setView] = useState<View>({ live: [], edit: [] });
+
   return (
     <main>
-      <Viewer lights={lights} setLights={setLights} />
+      <Viewer lights={lights} setLights={setLights} view={view} />
       <div className="split2">
         <Editor
           lists={lists}
           setLists={setLists}
-          // TODO: create a runner class to control the different controls of an active show
           runList={null}
           lights={lights}
           setLights={setLights}
+          view={view}
+          setView={setView}
         />
         <KeyEditor
           keybinds={keybinds}
           setKeybinds={setKeybinds}
           lists={lists}
+          view={view}
+          setView={setView}
         />
       </div>
     </main>

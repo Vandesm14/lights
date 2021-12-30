@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'preact/hooks';
 import convert from 'color-convert';
 
-import { newCue, newList } from './shared';
+import { newCue, newList, View } from './shared';
 import type { Cue, CueList, Light } from './shared';
 
 interface CueItemProps {
@@ -152,6 +152,8 @@ interface EditorProps {
   runList: any;
   lights: Light[];
   setLights: (lights: Light[]) => void;
+  view: View;
+  setView: (view: View) => void;
 }
 
 export const Editor = ({

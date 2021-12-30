@@ -1,10 +1,11 @@
 import { useState } from 'preact/hooks';
 
-import { Light } from './shared';
+import { Light, View } from './shared';
 
 interface ViewerProps {
   lights: Light[];
   setLights: (lights: Light[]) => void;
+  view: View;
 }
 
 export const Viewer = ({ lights, setLights }: ViewerProps) => {

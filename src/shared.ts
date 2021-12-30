@@ -23,6 +23,11 @@ export interface CueList {
   repeat?: boolean;
 }
 
+export interface View {
+  live: Light[];
+  edit: Light[];
+}
+
 export enum KeybindType {
   /** plays a list and **does not** wait after the first cue */
   Play = 0,

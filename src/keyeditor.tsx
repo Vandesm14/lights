@@ -1,4 +1,4 @@
-import { CueList, Keybind, KeybindType } from './shared';
+import { CueList, Keybind, KeybindType, Light, View } from './shared';
 import { newKeybind } from './shared';
 import { ComboInput } from './lib/comboinput';
 
@@ -6,6 +6,8 @@ interface KeyEditorProps {
   keybinds: Keybind[];
   setKeybinds: (keybinds: Keybind[]) => void;
   lists: CueList[];
+  view: View;
+  setView: (view: View) => void;
 }
 
 export const KeyEditor = ({ keybinds, setKeybinds, lists }: KeyEditorProps) => {
@@ -14,7 +16,7 @@ export const KeyEditor = ({ keybinds, setKeybinds, lists }: KeyEditorProps) => {
   };
 
   const removeKeybind = (id: string) => {
-    setKeybinds(keybinds.filter(keybind => keybind.id !== id));
+    setKeybinds(keybinds.filter((keybind) => keybind.id !== id));
   };
 
   return (
@@ -47,10 +49,17 @@ export const KeyEditor = ({ keybinds, setKeybinds, lists }: KeyEditorProps) => {
                 </td>
                 <td>
                   {/* a dropdown for all of the cuelists */}
-                  <select value={keybind.ids[0] ?? lists[0].id} onChange={(e) => {
-                    const newKeybind = { ...keybind, ids: [e.target.value] };
-                    setKeybinds(keybinds.map((k) => k.id === keybind.id ? newKeybind : k));
-                  }}>
+                  <select
+                    value={keybind.ids[0] ?? lists[0].id}
+                    onChange={(e) => {
+                      const newKeybind = { ...keybind, ids: [e.target.value] };
+                      setKeybinds(
+                        keybinds.map((k) =>
+                          k.id === keybind.id ? newKeybind : k
+                        )
+                      );
+                    }}
+                  >
                     {lists.map((list) => (
                       <option key={list.id} value={list.id}>
                         {list.name}
@@ -59,20 +68,34 @@ export const KeyEditor = ({ keybinds, setKeybinds, lists }: KeyEditorProps) => {
                   </select>
                 </td>
                 <td>
-                  <select value={keybind.type} onChange={(e) => {
-                    const newKeybind = { ...keybind, type: e.target.value as KeybindType };
-                    setKeybinds(keybinds.map((k) => k.id === keybind.id ? newKeybind : k));
-                  }}>
-                    {Object.keys(KeybindType).filter(el => isNaN(Number(el))).map((type) => (
-                      <option key={type} value={type}>
-                        {type}
-                      </option>
-                    ))}
+                  <select
+                    value={keybind.type}
+                    onChange={(e) => {
+                      const newKeybind = {
+                        ...keybind,
+                        type: e.target.value as KeybindType,
+                      };
+                      setKeybinds(
+                        keybinds.map((k) =>
+                          k.id === keybind.id ? newKeybind : k
+                        )
+                      );
+                    }}
+                  >
+                    {Object.keys(KeybindType)
+                      .filter((el) => isNaN(Number(el)))
+                      .map((type) => (
+                        <option key={type} value={type}>
+                          {type}
+                        </option>
+                      ))}
                   </select>
                 </td>
                 <td>
                   <div className="hstack">
-                    <button onClick={() => removeKeybind(keybind.id)}>Remove</button>
+                    <button onClick={() => removeKeybind(keybind.id)}>
+                      Remove
+                    </button>
                   </div>
                 </td>
               </tr>
