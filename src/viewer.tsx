@@ -1,4 +1,4 @@
-import { useEffect, useReducer, useState } from 'preact/hooks';
+import { useEffect, useState } from 'preact/hooks';
 
 import { Light, View } from './shared';
 import { linear } from './fade';
@@ -18,7 +18,11 @@ export const Viewer = ({ lights, setLights, view }: ViewerProps) => {
 
   useEffect(() => {
     if (view.edit[0]) {
-      const newLights = lights.map(el => view.edit[0].ids.includes(el.id) ? { ...el, color: view.edit[0].color } : el);
+      const newLights = lights.map((el) =>
+        view.edit[0].ids.includes(el.id)
+          ? { ...el, color: view.edit[0].color }
+          : el
+      );
       fadeLinear([...newLights], view.edit[0].duration);
     }
   }, [view.edit[0]]);
