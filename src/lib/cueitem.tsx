@@ -86,7 +86,6 @@ export const CueItem = ({
     setLists(newLists);
   };
 
-  // when the list is changed, view the first cue
   useEffect(() => {
     viewCueLights(getList()?.cues[0]?.id);
   }, [selectedList]);
