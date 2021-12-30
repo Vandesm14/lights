@@ -34,5 +34,6 @@ export const linear = (
       setLights(newLights);
       await asyncTimeout(() => {}, 1 / 30);
     }
+    setLights(to);
   };
 };
