@@ -26,6 +26,7 @@ select {
 
 input[type='color'] {
   padding: 0;
+  width: 100% !important;
 }
 
 button {
@@ -128,6 +129,7 @@ select:focus {
 
       &.index {
         width: 2rem;
+        user-select: none;
       }
       button {
         width: calc(100%);

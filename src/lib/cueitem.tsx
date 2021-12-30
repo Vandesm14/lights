@@ -60,8 +60,8 @@ export const CueItem = ({
     editCueData({ name: (e.target as HTMLInputElement).value });
   };
 
-  const handleDurationChange = (e: Event) => {
-    let value = parseInt((e.target as HTMLInputElement).value);
+  const handleDurationChange = (val: string) => {
+    let value = parseInt(val);
     if (isNaN(value)) value = defaultMs;
     editCueData({ duration: value });
   };
@@ -119,13 +119,16 @@ export const CueItem = ({
         <input type="text" value={cue.name} onChange={handleNameChange} />
       </td> */}
       <td>
-        <input
-          type="number"
-          value={cue.duration}
-          onChange={handleDurationChange}
-          min="0"
-          step="1"
-        />
+        <div className="hstack">
+          <input
+            type="number"
+            value={cue.duration}
+            onChange={(e) => handleDurationChange(e.target.value)}
+            min="0"
+            step="1"
+          />
+          <button onClick={() => handleDurationChange(defaultMs.toString())}>Reset</button>
+        </div>
       </td>
       <td>
         <input

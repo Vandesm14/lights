@@ -23,6 +23,7 @@ export const Viewer = ({ lights, setLights, view }: ViewerProps) => {
           ? { ...el, color: view.edit[0].color }
           : el
       );
+      // TODO: if this is already running, cancel it and start a new one
       fadeLinear([...newLights], view.edit[0].duration);
     }
   }, [view.edit[0]]);
