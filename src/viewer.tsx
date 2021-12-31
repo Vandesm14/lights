@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'preact/hooks';
 
 import { fillLights, Light, View } from './shared';
-import { linear } from './fade';
+import { Fader } from './fade';
 
 interface ViewerProps {
   view: View;
@@ -12,18 +12,17 @@ export const Viewer = ({ view, setView }: ViewerProps) => {
   const [drag, setDrag] = useState(false);
   const [dragState, setDragState] = useState(false);
   const [liveLights, setLiveLights] = useState(fillLights());
-
-  const fadeLinear = linear(liveLights, setLiveLights);
+  const [fade] = useState(()=>Fader(liveLights, setLiveLights));
 
   useEffect(() => {
-    if (view.edit) {
-      const newLights = liveLights.map((el) =>
+    if (view.edit && fade) {
+      const newLights = liveLights.map((el, index) =>
         view.edit.ids.includes(el.id)
           ? { ...el, color: view.edit.color }
           : { ...el, color: [0, 0, 0] }
       );
       // TODO: if this is already running, cancel it and start a new one
-      fadeLinear([...newLights], view.edit.duration);
+      fade({ to: [...newLights], from: liveLights }, view.edit.duration);
     }
   }, [view.edit]);
 
