@@ -99,20 +99,25 @@ export const CueItem = ({
   }, [selectedCue]);
 
   useEffect(() => {
-    new JSColor(input.current, {
-      value: convert.rgb.hex(cue.color),
-      palette: [
-        '#000000',
-        '#ffffff',
-        '#ff0000',
-        '#ffa500',
-        '#ffff00',
-        '#00ff00',
-        '#00ffff',
-        '#0000ff',
-        '#ff00ff',
-      ],
-    });
+    // TODO: Fix the core issue
+    try {
+      new JSColor(input.current, {
+        value: convert.rgb.hex(cue.color),
+        palette: [
+          '#000000',
+          '#ffffff',
+          '#ff0000',
+          '#ffa500',
+          '#ffff00',
+          '#00ff00',
+          '#00ffff',
+          '#0000ff',
+          '#ff00ff',
+        ],
+      });
+    } catch (err) {
+      // ignore
+    }
   }, [input]);
 
   return (
