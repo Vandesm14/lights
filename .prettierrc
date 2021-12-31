@@ -1,0 +1,9 @@
+{
+  "tabWidth": 2,
+  "useTabs": false,
+  "bracketSpacing": true,
+  "filepath": "./src",
+  "semi": true,
+  "singleQuote": true,
+  "trailingComma": "es5"
+}
