@@ -24,8 +24,11 @@ select {
   color: $text;
 }
 
-input[type='color'] {
-  padding: 0;
+input.jscolor {
+  width: calc(100% - 40px - 0.5rem) !important;
+}
+
+td select {
   width: 100% !important;
 }
 

@@ -1,4 +1,4 @@
-import { useEffect } from 'preact/hooks';
+import { useEffect, useRef } from 'preact/hooks';
 import convert from 'color-convert';
 
 import { defaultMs } from '../fade';
@@ -22,6 +22,8 @@ export interface CueItemProps {
   };
 }
 
+declare const JSColor: any;
+
 export const CueItem = ({
   cue,
   index,
@@ -34,6 +36,8 @@ export const CueItem = ({
   selectedList,
   lib: { getList, editCueData, removeCue },
 }: CueItemProps) => {
+  const input = useRef(null);
+
   const setCueLights = (id: Cue['id']) => {
     const cue = getList().cues.find((cue) => cue.id === id);
     if (!cue) return;
@@ -94,6 +98,23 @@ export const CueItem = ({
     viewCueLights(selectedCue);
   }, [selectedCue]);
 
+  useEffect(() => {
+    new JSColor(input.current, {
+      value: convert.rgb.hex(cue.color),
+      palette: [
+        '#000000',
+        '#ffffff',
+        '#ff0000',
+        '#ffa500',
+        '#ffff00',
+        '#00ff00',
+        '#00ffff',
+        '#0000ff',
+        '#ff00ff',
+      ],
+    });
+  }, [input]);
+
   return (
     <tr
       class={selectedCue === cue.id ? 'selected' : ''}
@@ -126,7 +147,8 @@ export const CueItem = ({
       </td>
       <td>
         <input
-          type="color"
+          ref={input}
+          className="jscolor"
           value={'#' + convert.rgb.hex(cue.color)}
           onInput={(e) => handleColorChange(e.target.value)}
         />
