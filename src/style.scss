@@ -38,7 +38,8 @@ button {
 
 button:hover,
 input:focus,
-select:focus {
+select:focus,
+button.active {
   background-color: $background-lighter;
 }
 

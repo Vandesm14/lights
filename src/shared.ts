@@ -1,6 +1,8 @@
 import uuid from 'uuid';
 import { defaultMs } from './fade';
 
+export type State<T> = (state: T) => void;
+
 export type Color = [number, number, number];
 
 export interface Light {
@@ -58,6 +60,14 @@ export interface Keybind {
     altKey: boolean;
   };
 }
+
+export interface Controls {
+  viewMode: 'live' | 'edit';
+}
+
+export const newControls = (): Controls => ({
+  viewMode: 'edit',
+});
 
 export const fillLights = (
   height = 8,
