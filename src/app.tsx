@@ -31,7 +31,6 @@ const App = () => {
 
   return (
     <main>
-      <Viewer view={view} setView={setView} />
       <Tabs>
         <Tab name="Cue(List)Editor">
           <Editor
@@ -52,6 +51,7 @@ const App = () => {
           />
         </Tab>
       </Tabs>
+      <Viewer view={view} setView={setView} />
     </main>
   );
 };
