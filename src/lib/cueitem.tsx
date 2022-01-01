@@ -99,8 +99,7 @@ export const CueItem = ({
   }, [selectedCue]);
 
   useEffect(() => {
-    // TODO: Fix the core issue
-    try {
+    if (!input.current.jscolor) {
       new JSColor(input.current, {
         value: convert.rgb.hex(cue.color),
         palette: [
@@ -115,8 +114,8 @@ export const CueItem = ({
           '#ff00ff',
         ],
       });
-    } catch (err) {
-      // ignore
+    } else {
+      input.current.jscolor.fromRGB(cue.color);
     }
   }, [input]);
 
