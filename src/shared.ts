@@ -1,5 +1,5 @@
 import uuid from 'uuid';
-import { defaultMs } from './fade';
+import { defaultMs } from './lib/fade';
 
 export type State<T> = (state: T) => void;
 
@@ -8,6 +8,7 @@ export type Color = [number, number, number];
 export interface Light {
   id: number;
   color: Color;
+  transparent: boolean;
   selected: boolean;
 }
 
@@ -86,6 +87,7 @@ export const fillLights = (
       lights.push({
         id: i * width + j,
         color: [0, 0, 0],
+        transparent: true,
         selected: false,
         ...defaultProps,
       });

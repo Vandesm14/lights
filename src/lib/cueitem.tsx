@@ -1,7 +1,7 @@
 import { useContext, useEffect, useRef, useState } from 'preact/hooks';
 import convert from 'color-convert';
 
-import { defaultMs } from '../fade';
+import { defaultMs } from './fade';
 import { Cue, CueList } from '../shared';
 
 import { Context } from '../store';

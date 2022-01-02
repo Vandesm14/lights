@@ -1,4 +1,4 @@
-import { asyncTimeout, Color, Light } from './shared';
+import { asyncTimeout, Color, Light } from '../shared';
 
 export const defaultMs = 100;
 

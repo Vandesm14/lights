@@ -1,7 +1,7 @@
 import { useContext, useEffect, useState } from 'preact/hooks';
 
 import { fillLights, Light } from './shared';
-import { Fader } from './fade';
+import { Fader } from './lib/fade';
 
 import { Context } from './store';
 
@@ -20,12 +20,11 @@ export const Viewer = () => {
           ? { ...el, color: view.edit.color }
           : { ...el, color: [0, 0, 0] }
       );
-      // TODO: if this is already running, cancel it and start a new one
       fade({ to: [...newLights], from: liveLights }, view.edit.duration);
     }
   }, [view.edit]);
 
-  const handleDragStart = (id: Light['id'], e: MouseEvent) => {
+  const handleDragStart = (id: Light['id'], e) => {
     e.preventDefault();
     if (e.button === 1) return;
     const isLeftClick = e.button === 0;
@@ -41,7 +40,7 @@ export const Viewer = () => {
     }
   };
 
-  const handleDragEnd = (e: MouseEvent) => {
+  const handleDragEnd = (e) => {
     if (e.target !== e.currentTarget) return;
     e.preventDefault();
     setDrag(false);
@@ -59,7 +58,7 @@ export const Viewer = () => {
     }
   };
 
-  const selectNone = (e: MouseEvent) => {
+  const selectNone = (e) => {
     if (e.target === e.currentTarget && !drag) {
       setView({ ...view, edit: { ...view.edit, ids: [] } });
     }
