@@ -1,11 +1,7 @@
-import { Component, ComponentChildren } from 'preact';
+import { ComponentChildren, FunctionalComponent } from 'preact';
 import { useState } from 'preact/hooks';
 
-export interface TabsProps {
-  children?: Component<TabProps>[]
-}
-
-export const Tabs = ({ children }: TabsProps) => {
+export const Tabs: FunctionalComponent = ({ children }) => {
   const [activeTab, setActiveTab] = useState(0);
   const isArray = Array.isArray(children);
 
@@ -17,6 +13,7 @@ export const Tabs = ({ children }: TabsProps) => {
             className={`pill ${i === activeTab ? 'active' : ''}`}
             onClick={() => setActiveTab(i)}
           >
+            {/* @ts-expect-error: Think this is an issue with Preact vs TS */}
             {child.props.title ?? child.props.name}
           </button>
         ))}
@@ -32,7 +29,7 @@ export interface TabProps {
   children?: ComponentChildren;
 }
 
-export const Tab = ({ title, children }: TabProps) => {
+export const Tab: FunctionalComponent<TabProps> = ({ title, children }) => {
   return (
     <div className="tab">
       { title ? <h2>{title}</h2> : null }

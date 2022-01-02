@@ -157,8 +157,7 @@ export const CueItem = ({
           </div>
         </td>
       </tr>
-      <tr style={{ display: display ? 'table-row' : 'none' }}>
-      </tr>
+      <tr style={{ display: display ? 'table-row' : 'none' }}></tr>
     </>
   );
 };
