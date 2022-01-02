@@ -1,19 +1,17 @@
-import { useEffect, useRef } from 'preact/hooks';
+import { useContext, useEffect, useRef } from 'preact/hooks';
 import convert from 'color-convert';
 
 import { defaultMs } from '../fade';
-import { Cue, CueList, Light, View } from '../shared';
+import { Cue, CueList } from '../shared';
+
+import { Context } from '../store';
 
 export interface CueItemProps {
   key: Cue['id'];
   cue: Cue;
   index: number;
-  lists: CueList[];
-  setLists: (lists: CueList[]) => void;
   selectedCue: Cue['id'];
   setSelectedCue: (id: Cue['id']) => void;
-  view: View;
-  setView: (view: View) => void;
   selectedList: CueList['id'];
   lib: {
     getList: (id?: CueList['id']) => CueList;
@@ -27,16 +25,13 @@ declare const JSColor: any;
 export const CueItem = ({
   cue,
   index,
-  lists,
-  setLists,
   selectedCue,
   setSelectedCue,
-  view,
-  setView,
   selectedList,
   lib: { getList, editCueData, removeCue },
 }: CueItemProps) => {
   const input = useRef(null);
+  const { lists, setLists, view, setView } = useContext(Context);
 
   const setCueLights = (id: Cue['id']) => {
     const cue = getList().cues.find((cue) => cue.id === id);

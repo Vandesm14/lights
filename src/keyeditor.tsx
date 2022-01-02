@@ -1,16 +1,13 @@
-import { CueList, Keybind, KeybindType, Light, View } from './shared';
+import { Keybind, KeybindType } from './shared';
 import { newKeybind } from './shared';
 import { ComboInput } from './lib/comboinput';
 
-interface KeyEditorProps {
-  keybinds: Keybind[];
-  setKeybinds: (keybinds: Keybind[]) => void;
-  lists: CueList[];
-  view: View;
-  setView: (view: View) => void;
-}
+import { useContext } from 'preact/hooks';
+import { Context } from './store';
 
-export const KeyEditor = ({ keybinds, setKeybinds, lists }: KeyEditorProps) => {
+export const KeyEditor = () => {
+  const { keybinds, setKeybinds, lists } = useContext(Context);
+
   const addKeybind = (keybind: Keybind) => {
     setKeybinds([...keybinds, keybind]);
   };

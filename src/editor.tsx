@@ -1,25 +1,14 @@
-import { useState } from 'preact/hooks';
+import { useContext, useState } from 'preact/hooks';
 
-import { newCue, newList, View } from './shared';
-import type { Cue, CueList, Light } from './shared';
+import { newCue, newList } from './shared';
+import type { Cue, CueList } from './shared';
 import { CueItem } from './lib/cueitem';
 
-interface EditorProps {
-  lists: CueList[];
-  setLists: (lists: CueList[]) => void;
-  // TODO: when runner is done, update this type
-  runList: any;
-  view: View;
-  setView: (view: View) => void;
-}
+import { Context } from './store';
 
-export const Editor = ({
-  lists,
-  setLists,
-  runList,
-  view,
-  setView,
-}: EditorProps) => {
+export const Editor = () => {
+  const { lists, setLists } = useContext(Context);
+
   const [selectedList, setSelectedList] = useState(lists[0].id);
   const [selectedCue, setSelectedCue] = useState(lists[0].cues[0].id);
 
@@ -111,7 +100,7 @@ export const Editor = ({
           <button onClick={() => addList()}>Add List</button>
           {/* FIXME: Remove List doesn't properly set selectedList */}
           <button onClick={() => removeList(selectedList)}>Remove List</button>
-          <button onClick={() => runList(selectedList)}>Run List</button>
+          {/* <button>Run List</button> */}
         </div>
         <div className="hstack">
           <input
@@ -177,12 +166,8 @@ export const Editor = ({
                 key={cue.id}
                 cue={cue}
                 index={index}
-                lists={lists}
-                setLists={setLists}
                 selectedCue={selectedCue}
                 setSelectedCue={setSelectedCue}
-                view={view}
-                setView={setView}
                 selectedList={selectedList}
                 lib={{
                   getList,

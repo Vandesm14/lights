@@ -1,18 +1,17 @@
-import { useEffect, useState } from 'preact/hooks';
+import { useContext, useEffect, useState } from 'preact/hooks';
 
-import { fillLights, Light, View } from './shared';
+import { fillLights, Light } from './shared';
 import { Fader } from './fade';
 
-interface ViewerProps {
-  view: View;
-  setView: (view: View) => void;
-}
+import { Context } from './store';
 
-export const Viewer = ({ view, setView }: ViewerProps) => {
+export const Viewer = () => {
   const [drag, setDrag] = useState(false);
   const [dragState, setDragState] = useState(false);
   const [liveLights, setLiveLights] = useState(fillLights());
-  const [fade] = useState(()=>Fader(liveLights, setLiveLights));
+  const [fade] = useState(() => Fader(liveLights, setLiveLights));
+
+  const { view, setView } = useContext(Context);
 
   useEffect(() => {
     if (view.edit && fade) {

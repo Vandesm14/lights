@@ -69,6 +69,12 @@ export const newControls = (): Controls => ({
   viewMode: 'edit',
 });
 
+export interface Options {
+  // TODO: add options
+}
+
+export const newOptions = (): Options => ({});
+
 export const fillLights = (
   height = 8,
   width = 8,

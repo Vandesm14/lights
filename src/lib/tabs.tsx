@@ -12,7 +12,6 @@ export const Tabs = ({ children }: TabsProps) => {
   return (
     <div className="tabs">
       <div className="menu hstack">
-        {/* radio buttons as a row of "pills" */}
         {isArray && children.map((child, i) => (
           <button
             className={`pill ${i === activeTab ? 'active' : ''}`}
