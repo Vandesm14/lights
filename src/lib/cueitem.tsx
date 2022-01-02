@@ -146,7 +146,9 @@ export const CueItem = ({
           ref={input}
           className="jscolor"
           value={'#' + convert.rgb.hex(cue.color)}
-          onInput={(e) => handleColorChange((e.target as HTMLInputElement).value)}
+          onInput={(e) =>
+            handleColorChange((e.target as HTMLInputElement).value)
+          }
         />
       </td>
       <td>
