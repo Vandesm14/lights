@@ -20,8 +20,8 @@ interface Store {
   setView: (view: View) => void;
   controls: Controls;
   setControls: StateUpdater<Controls>;
-  // options: Options;
-  // setOptions: State<Options>;
+  options: Options;
+  setOptions: StateUpdater<Options>;
 }
 export const Context = createContext({} as Store);
 
@@ -45,10 +45,10 @@ export const Store: FunctionalComponent = ({ children }) => {
       localStorage.setItem('controls', JSON.stringify(action));
       return action;
     }, JSON.parse(localStorage.getItem('controls')) ?? newControls());
-  // const [options, setOptions] = useReducer((state, action) => {
-  //   localStorage.setItem('options', JSON.stringify(action));
-  //   return action;
-  // }, JSON.parse(localStorage.getItem('options')) ?? {});
+  const [options, setOptions] = useReducer((state, action) => {
+    localStorage.setItem('options', JSON.stringify(action));
+    return action;
+  }, JSON.parse(localStorage.getItem('options')) ?? {});
 
   const construct: Store = {
     lists,
@@ -59,8 +59,8 @@ export const Store: FunctionalComponent = ({ children }) => {
     setView,
     controls,
     setControls,
-    // options,
-    // setOptions,
+    options,
+    setOptions,
   };
 
   return <Context.Provider value={construct} children={children}></Context.Provider>;
