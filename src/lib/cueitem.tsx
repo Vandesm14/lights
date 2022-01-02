@@ -116,20 +116,17 @@ export const CueItem = ({
 
   return (
     <tr
-      class={selectedCue === cue.id ? 'selected' : ''}
+      className={selectedCue === cue.id ? 'selected' : ''}
       onClick={() => viewCueLights(cue.id)}
     >
-      <td class="index">{index}</td>
-      <td class="index">{cue.ids.length}</td>
+      <td className="index">{index}</td>
+      <td className="index">{cue.ids.length}</td>
       <td>
         <div className="hstack">
           <button onClick={() => viewCueLights(cue.id)}>View</button>
           <button onClick={() => setCueLights(cue.id)}>Store</button>
         </div>
       </td>
-      {/* <td>
-        <input type="text" value={cue.name} onChange={handleNameChange} />
-      </td> */}
       <td>
         <div className="hstack">
           <input
@@ -149,7 +146,7 @@ export const CueItem = ({
           ref={input}
           className="jscolor"
           value={'#' + convert.rgb.hex(cue.color)}
-          onInput={(e) => handleColorChange(e.target.value)}
+          onInput={(e) => handleColorChange((e.target as HTMLInputElement).value)}
         />
       </td>
       <td>

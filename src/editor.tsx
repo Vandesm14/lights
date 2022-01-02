@@ -37,7 +37,7 @@ export const Editor = () => {
     }
   };
 
-  const selectList = (e: Event) => {
+  const selectList = (e) => {
     const selectedList = (e.target as HTMLInputElement).value;
     setSelectedList(selectedList);
   };
@@ -79,7 +79,7 @@ export const Editor = () => {
         <div className="hstack">
           <select
             name="selectedList"
-            onChange={(e) => selectList(e)}
+            onChange={selectList}
             value={selectedList}
           >
             {lists.length === 0 ? (
@@ -100,7 +100,6 @@ export const Editor = () => {
           <button onClick={() => addList()}>Add List</button>
           {/* FIXME: Remove List doesn't properly set selectedList */}
           <button onClick={() => removeList(selectedList)}>Remove List</button>
-          {/* <button>Run List</button> */}
         </div>
         <div className="hstack">
           <input
@@ -110,7 +109,7 @@ export const Editor = () => {
               setLists(
                 lists.map((list) =>
                   list.id === selectedList
-                    ? { ...list, name: e.target.value }
+                    ? { ...list, name: (e.target as HTMLInputElement).value }
                     : list
                 )
               )
