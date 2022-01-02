@@ -67,6 +67,9 @@ main {
     display: grid;
     margin: 0 auto;
     width: min-content;
+    background: url('assets/transparent.svg') repeat;
+    background-size: calc(2rem + 3px);
+    background-position: top right;
 
     grid-template-columns: repeat(8, 1fr);
 

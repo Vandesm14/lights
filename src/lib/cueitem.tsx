@@ -1,4 +1,4 @@
-import { useContext, useEffect, useRef } from 'preact/hooks';
+import { useContext, useEffect, useRef, useState } from 'preact/hooks';
 import convert from 'color-convert';
 
 import { defaultMs } from '../fade';
@@ -32,6 +32,7 @@ export const CueItem = ({
 }: CueItemProps) => {
   const input = useRef(null);
   const { lists, setLists, view, setView } = useContext(Context);
+  const [display, setDisplay] = useState(false);
 
   const setCueLights = (id: Cue['id']) => {
     const cue = getList().cues.find((cue) => cue.id === id);
@@ -46,10 +47,6 @@ export const CueItem = ({
     if (!cue) return;
     if (selectedCue !== id) setSelectedCue(cue.id);
     setView({ ...view, edit: cue });
-  };
-
-  const handleNameChange = (e: Event) => {
-    editCueData({ name: (e.target as HTMLInputElement).value });
   };
 
   const handleDurationChange = (val: string) => {
@@ -115,49 +112,53 @@ export const CueItem = ({
   }, [input]);
 
   return (
-    <tr
-      className={selectedCue === cue.id ? 'selected' : ''}
-      onClick={() => viewCueLights(cue.id)}
-    >
-      <td className="index">{index}</td>
-      <td className="index">{cue.ids.length}</td>
-      <td>
-        <div className="hstack">
-          <button onClick={() => viewCueLights(cue.id)}>View</button>
-          <button onClick={() => setCueLights(cue.id)}>Store</button>
-        </div>
-      </td>
-      <td>
-        <div className="hstack">
+    <>
+      <tr
+        className={selectedCue === cue.id ? 'selected' : ''}
+        onClick={() => viewCueLights(cue.id)}
+      >
+        <td className="index">{index}</td>
+        <td className="index">{cue.ids.length}</td>
+        <td>
+          <div className="hstack">
+            <button onClick={() => viewCueLights(cue.id)}>View</button>
+            <button onClick={() => setCueLights(cue.id)}>Store</button>
+          </div>
+        </td>
+        <td>
+          <div className="hstack">
+            <input
+              type="number"
+              value={cue.duration}
+              onChange={(e) => handleDurationChange(e.target.value)}
+              min="0"
+              step="1"
+            />
+            <button onClick={() => handleDurationChange(defaultMs.toString())}>
+              Default
+            </button>
+          </div>
+        </td>
+        <td>
           <input
-            type="number"
-            value={cue.duration}
-            onChange={(e) => handleDurationChange(e.target.value)}
-            min="0"
-            step="1"
+            ref={input}
+            className="jscolor"
+            value={'#' + convert.rgb.hex(cue.color)}
+            onInput={(e) =>
+              handleColorChange((e.target as HTMLInputElement).value)
+            }
           />
-          <button onClick={() => handleDurationChange(defaultMs.toString())}>
-            Default
-          </button>
-        </div>
-      </td>
-      <td>
-        <input
-          ref={input}
-          className="jscolor"
-          value={'#' + convert.rgb.hex(cue.color)}
-          onInput={(e) =>
-            handleColorChange((e.target as HTMLInputElement).value)
-          }
-        />
-      </td>
-      <td>
-        <div className="hstack">
-          <button onClick={() => removeCue(cue.id)}>Remove</button>
-          <button onClick={() => moveCue(cue.id, 'up')}>Up</button>
-          <button onClick={() => moveCue(cue.id, 'down')}>Down</button>
-        </div>
-      </td>
-    </tr>
+        </td>
+        <td>
+          <div className="hstack">
+            <button onClick={() => moveCue(cue.id, 'up')}>▲</button>
+            <button onClick={() => moveCue(cue.id, 'down')}>▼</button>
+            <button onClick={() => removeCue(cue.id)}>X</button>
+          </div>
+        </td>
+      </tr>
+      <tr style={{ display: display ? 'table-row' : 'none' }}>
+      </tr>
+    </>
   );
 };
