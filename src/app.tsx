@@ -7,18 +7,22 @@ import { KeyEditor } from './keyeditor';
 import { Tabs, Tab } from './lib/tabs';
 
 import { Store } from './store';
+import { Controls } from './controls';
 
 const App = () => {
   return (
     <main>
-      <Tabs>
-        <Tab name="Cue(List) Editor">
-          <Editor />
-        </Tab>
-        <Tab name="Keybind Editor">
-          <KeyEditor />
-        </Tab>
-      </Tabs>
+      <div className="vstack">
+        <Controls />
+        <Tabs>
+          <Tab name="Cue(List) Editor">
+            <Editor />
+          </Tab>
+          <Tab name="Keybind Editor">
+            <KeyEditor />
+          </Tab>
+        </Tabs>
+      </div>
       <Viewer />
     </main>
   );

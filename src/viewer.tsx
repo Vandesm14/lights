@@ -1,28 +1,31 @@
 import { useContext, useEffect, useState } from 'preact/hooks';
+import { FunctionalComponent } from 'preact';
 
 import { fillLights, Light } from './shared';
 import { Fader } from './lib/fade';
 
 import { Context } from './store';
 
-export const Viewer = () => {
+export const Viewer: FunctionalComponent = () => {
   const [drag, setDrag] = useState(false);
   const [dragState, setDragState] = useState(false);
   const [liveLights, setLiveLights] = useState(fillLights());
   const [fade] = useState(() => Fader(liveLights, setLiveLights));
 
-  const { view, setView } = useContext(Context);
+  const { view, setView, controls } = useContext(Context);
 
   useEffect(() => {
-    if (view.edit && fade) {
-      const newLights = liveLights.map((el, index) =>
+    if (controls.viewMode === 'edit' && view.edit) {
+      const newLights = liveLights.map((el) =>
         view.edit.ids.includes(el.id)
           ? { ...el, color: view.edit.color }
           : { ...el, color: [0, 0, 0] }
       );
       fade({ to: [...newLights], from: liveLights }, view.edit.duration);
+    } else {
+      fade({ to: fillLights(), from: liveLights }, 0);
     }
-  }, [view.edit]);
+  }, [view, controls.viewMode]);
 
   const handleDragStart = (id: Light['id'], e) => {
     e.preventDefault();
@@ -76,11 +79,13 @@ export const Viewer = () => {
           return (
             <div
               key={light.id}
-              className={`light ${
-                view.edit.ids.includes(light.id) ? 'selected' : ''
-              }`}
+              className={`light
+                ${view.edit.ids.includes(light.id) ? 'selected ' : ' '}
+              `}
               style={{
-                backgroundColor: `rgb(${light.color.join(',')})`,
+                backgroundColor: `rgb(${light.color.join(',')},${
+                  view.edit.ids.includes(light.id) || controls.viewMode === 'live' ? '1' : '0'
+                })`,
               }}
               onMouseDown={(e) => handleDragStart(light.id, e)}
               onMouseUp={handleDragEnd}

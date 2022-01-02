@@ -8,7 +8,6 @@ export type Color = [number, number, number];
 export interface Light {
   id: number;
   color: Color;
-  transparent: boolean;
   selected: boolean;
 }
 
@@ -87,7 +86,6 @@ export const fillLights = (
       lights.push({
         id: i * width + j,
         color: [0, 0, 0],
-        transparent: true,
         selected: false,
         ...defaultProps,
       });
