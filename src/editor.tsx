@@ -95,10 +95,10 @@ export const Editor = () => {
         palette,
       });
     } else {
-      input.current.jscolor.fromRGB(getCue().color);
+      input.current.jscolor.fromRGB(...getCue().color);
       input.current.jscolor.palette = palette;
     }
-  }, [input]);
+  }, [lists, selectedList, selectedCue]);
 
   const setCueLights = (id: Cue['id']) => {
     const cue = getList().cues.find((cue) => cue.id === id);
@@ -167,7 +167,7 @@ export const Editor = () => {
           <input
             ref={input}
             className="jscolor"
-            value={'#' + convert.rgb.hex(getCue().color)}
+            value={'#' + convert.rgb.hex(getCue()?.color) || '#000000'}
             onInput={(e) =>
               handleColorChange((e.target as HTMLInputElement).value)
             }
