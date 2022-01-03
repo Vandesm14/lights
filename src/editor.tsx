@@ -1,13 +1,17 @@
-import { useContext, useState } from 'preact/hooks';
+import { useContext, useEffect, useRef, useState } from 'preact/hooks';
 
 import { newCue, newList } from './shared';
 import type { Cue, CueList } from './shared';
 import { CueItem } from './lib/cueitem';
+import convert from 'color-convert';
 
 import { Context } from './store';
 
+declare const JSColor: any;
+
 export const Editor = () => {
-  const { lists, setLists } = useContext(Context);
+  const input = useRef(null);
+  const { lists, setLists, view, setView } = useContext(Context);
 
   const [selectedList, setSelectedList] = useState(lists[0].id);
   const [selectedCue, setSelectedCue] = useState(lists[0].cues[0].id);
@@ -72,6 +76,50 @@ export const Editor = () => {
     };
   };
 
+  useEffect(() => {
+    const palette = [
+      '#000000',
+      '#ffffff',
+      '#ff0000',
+      '#ffa500',
+      '#ffff00',
+      '#00ff00',
+      '#00ffff',
+      '#0000ff',
+      '#ff00ff',
+    ];
+
+    if (!input.current.jscolor) {
+      new JSColor(input.current, {
+        value: convert.rgb.hex(getCue().color),
+        palette,
+      });
+    } else {
+      input.current.jscolor.fromRGB(getCue().color);
+      input.current.jscolor.palette = palette;
+    }
+  }, [input]);
+
+  const setCueLights = (id: Cue['id']) => {
+    const cue = getList().cues.find((cue) => cue.id === id);
+    if (!cue) return;
+    const ids = view.edit.ids;
+    editCueData(getCue().id)({ ...cue, ids });
+    viewCueLights(id);
+  };
+
+  const viewCueLights = (id: Cue['id']) => {
+    const cue = getList().cues.find((cue) => cue.id === id);
+    if (!cue) return;
+    if (selectedCue !== id) setSelectedCue(cue.id);
+    setView({ ...view, edit: cue });
+  };
+
+  const handleColorChange = (raw: string) => {
+    editCueData(getCue().id)({ color: convert.hex.rgb(raw) });
+    setCueLights(getCue().id);
+  };
+
   return (
     <div className="editor">
       <h1>Cuelists</h1>
@@ -98,7 +146,6 @@ export const Editor = () => {
             )}
           </select>
           <button onClick={() => addList()}>Add List</button>
-          {/* FIXME: Remove List doesn't properly set selectedList */}
           <button onClick={() => removeList(selectedList)}>Remove List</button>
         </div>
         <div className="hstack">
@@ -113,6 +160,16 @@ export const Editor = () => {
                     : list
                 )
               )
+            }
+          />
+        </div>
+        <div className="hstack">
+          <input
+            ref={input}
+            className="jscolor"
+            value={'#' + convert.rgb.hex(getCue().color)}
+            onInput={(e) =>
+              handleColorChange((e.target as HTMLInputElement).value)
             }
           />
         </div>
@@ -151,10 +208,8 @@ export const Editor = () => {
             <th>#</th>
             <th>Count</th>
             <th>Cue</th>
-            {/* <th>Name</th> */}
             <th>Duration</th>
             <th>Color</th>
-            {/* <th>Type</th> */}
             <th>Edit</th>
           </tr>
         </thead>

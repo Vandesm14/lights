@@ -5,6 +5,7 @@ import { defaultMs } from './fade';
 import { Cue, CueList } from '../shared';
 
 import { Context } from '../store';
+import { FunctionalComponent } from 'preact';
 
 export interface CueItemProps {
   key: Cue['id'];
@@ -20,19 +21,17 @@ export interface CueItemProps {
   };
 }
 
-declare const JSColor: any;
-
-export const CueItem = ({
+export const CueItem: FunctionalComponent<CueItemProps> = ({
   cue,
   index,
   selectedCue,
   setSelectedCue,
   selectedList,
   lib: { getList, editCueData, removeCue },
-}: CueItemProps) => {
-  const input = useRef(null);
+}) => {
   const { lists, setLists, view, setView } = useContext(Context);
   const [display, setDisplay] = useState(false);
+  const canvas = useRef<HTMLCanvasElement>(null);
 
   const setCueLights = (id: Cue['id']) => {
     const cue = getList().cues.find((cue) => cue.id === id);
@@ -53,11 +52,6 @@ export const CueItem = ({
     let value = parseInt(val);
     if (isNaN(value)) value = defaultMs;
     editCueData({ duration: value });
-  };
-
-  const handleColorChange = (raw: string) => {
-    editCueData({ color: convert.hex.rgb(raw) });
-    setCueLights(cue.id);
   };
 
   const moveCue = (id: Cue['id'], direction: 'up' | 'down') => {
@@ -91,25 +85,12 @@ export const CueItem = ({
   }, [selectedCue]);
 
   useEffect(() => {
-    if (!input.current.jscolor) {
-      new JSColor(input.current, {
-        value: convert.rgb.hex(cue.color),
-        palette: [
-          '#000000',
-          '#ffffff',
-          '#ff0000',
-          '#ffa500',
-          '#ffff00',
-          '#00ff00',
-          '#00ffff',
-          '#0000ff',
-          '#ff00ff',
-        ],
-      });
-    } else {
-      input.current.jscolor.fromRGB(cue.color);
-    }
-  }, [input]);
+    const context = canvas.current?.getContext('2d');
+    if (!context) return;
+    const hex = convert.rgb.hex(cue.color);
+    context.fillStyle = '#' + hex;
+    context.fillRect(0, 0, canvas.current.width, canvas.current.height);
+  }, [cue.color]);
 
   return (
     <>
@@ -123,6 +104,9 @@ export const CueItem = ({
           <div className="hstack">
             <button onClick={() => viewCueLights(cue.id)}>View</button>
             <button onClick={() => setCueLights(cue.id)}>Store</button>
+            <button onClick={() => setDisplay(!display)}>
+              {display ? 'Collapse' : 'Expand'}
+            </button>
           </div>
         </td>
         <td>
@@ -140,14 +124,10 @@ export const CueItem = ({
           </div>
         </td>
         <td>
-          <input
-            ref={input}
-            className="jscolor"
-            value={'#' + convert.rgb.hex(cue.color)}
-            onInput={(e) =>
-              handleColorChange((e.target as HTMLInputElement).value)
-            }
-          />
+          <canvas ref={canvas} style={{
+            width: '32px',
+            height: '32px',
+          }}></canvas>
         </td>
         <td>
           <div className="hstack">
@@ -157,7 +137,9 @@ export const CueItem = ({
           </div>
         </td>
       </tr>
-      <tr style={{ display: display ? 'table-row' : 'none' }}></tr>
+      <tr style={{ display: display ? 'table-row' : 'none' }}>
+        <td colSpan={6}>You found Me!</td>
+      </tr>
     </>
   );
 };

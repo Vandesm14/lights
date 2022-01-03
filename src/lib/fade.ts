@@ -25,7 +25,7 @@ export const Fader = function (
     const { from = lights, to } = props;
     this.runID++;
     let current = this.runID;
-    if (ms === 0) {
+    if (ms <= 0) {
       setLights(to);
       return;
     }
