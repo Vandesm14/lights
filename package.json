@@ -3,14 +3,11 @@
   "version": "1.0.0",
   "description": "",
   "keywords": [],
-  "license": "ISC",
-  "author": "",
+  "license": "MIT",
+  "author": "vandesm14",
   "main": "index.js",
   "scripts": {
     "start": "parcel ./src/index.html -p 5500"
-  },
-  "devDependencies": {
-    "@parcel/transformer-sass": "^2.0.1"
   },
   "dependencies": {
     "@types/color-convert": "^2.0.0",
@@ -20,5 +17,8 @@
     "preact": "^10.6.4",
     "react-colorful": "^5.5.1",
     "uuid": "^3.4.0"
+  },
+  "devDependencies": {
+    "@parcel/transformer-sass": "^2.0.1"
   }
 }
