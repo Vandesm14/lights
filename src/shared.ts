@@ -31,7 +31,16 @@ export interface View {
   edit: Cue;
 }
 
-export enum KeybindType {
+export type KeybindType =
+  | 'Play'
+  | 'Pause'
+  | 'Start'
+  | 'Next'
+  | 'Prev'
+  | 'Release'
+  | 'Flash';
+
+export enum KeybindTypeEnum {
   /** plays a list and **does not** wait after the first cue */
   Play = 0,
   /** finishes the first cue animation and **waits** */
@@ -59,6 +68,7 @@ export interface Keybind {
     ctrlKey: boolean;
     altKey: boolean;
   };
+  active: boolean;
 }
 
 export interface Controls {
@@ -79,7 +89,7 @@ export const fillLights = (
   height = 8,
   width = 8,
   defaultProps?: Partial<Light>
-) => {
+): Light[] => {
   const lights = [];
   for (let i = 0; i < height; i++) {
     for (let j = 0; j < width; j++) {
@@ -119,13 +129,14 @@ export const newKeybind = (): Keybind => {
     id,
     key: '',
     ids: [],
-    type: KeybindType.Play,
+    type: 'Flash',
     raw: {
       key: '',
       shiftKey: false,
       ctrlKey: false,
       altKey: false,
     },
+    active: false,
   };
 };
 

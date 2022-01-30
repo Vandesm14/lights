@@ -1,4 +1,4 @@
-import { Keybind, KeybindType } from './shared';
+import { Keybind, KeybindType, KeybindTypeEnum } from './shared';
 import { newKeybind } from './shared';
 import { ComboInput } from './lib/comboinput';
 
@@ -79,7 +79,7 @@ export const KeyEditor = () => {
                       );
                     }}
                   >
-                    {Object.keys(KeybindType)
+                    {Object.keys(KeybindTypeEnum)
                       .filter((el) => isNaN(Number(el)))
                       .map((type) => (
                         <option key={type} value={type}>
