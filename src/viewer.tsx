@@ -17,28 +17,19 @@ export const Viewer: FunctionalComponent = () => {
 
   const keyDown = useCallback(
     (e) => {
-      const activeBinds = keybinds.filter(
+      const triggeredBinds = keybinds.filter(
         (k) =>
           k.raw.key === e.key &&
           k.raw.ctrlKey === e.ctrlKey &&
           k.raw.shiftKey === e.shiftKey &&
-          k.raw.altKey === e.altKey
+          k.raw.altKey === e.altKey &&
+          // don't retrigger if already active
+          k.active === false
       );
-      for (const bind of activeBinds) {
-        if (bind.active) continue;
+      for (const bind of triggeredBinds) {
         setKeybinds(
           keybinds.map((k) => (k.id === bind.id ? { ...k, active: true } : k))
         );
-
-        if (bind.type === 'Flash') {
-          setView({
-            ...view,
-            live: [
-              ...view.live,
-              lists.find((el) => el.id === bind.ids[0]).cues[0],
-            ],
-          });
-        }
       }
     },
     [keybinds]
@@ -46,24 +37,17 @@ export const Viewer: FunctionalComponent = () => {
 
   const keyUp = useCallback(
     (e) => {
-      const activeBinds = keybinds.filter(
+      const triggeredBinds = keybinds.filter(
         (k) =>
           k.raw.key === e.key &&
           k.raw.ctrlKey === e.ctrlKey &&
           k.raw.shiftKey === e.shiftKey &&
           k.raw.altKey === e.altKey
       );
-      for (const bind of activeBinds) {
+      for (const bind of triggeredBinds) {
         setKeybinds(
           keybinds.map((k) => (k.id === bind.id ? { ...k, active: false } : k))
         );
-        if (bind.type === 'Flash') {
-          const cue = lists.find((el) => el.id === bind.ids[0]).cues[0];
-          setView({
-            ...view,
-            live: view.live.filter((el) => el.id !== cue.id),
-          });
-        }
       }
     },
     [keybinds]
@@ -72,6 +56,33 @@ export const Viewer: FunctionalComponent = () => {
   useEffect(() => {
     document.addEventListener('keydown', keyDown);
     document.addEventListener('keyup', keyUp);
+
+    let newView = { ...view };
+
+    for (const bind of keybinds) {
+      if (bind.type === 'Flash') {
+        if (bind.active) {
+          const list = lists.find((el) => el.id === bind.ids[0]);
+          if (!list) continue;
+          newView = {
+            ...newView,
+            live: [
+              ...newView.live,
+              list.cues[0],
+            ],
+          };
+        } else {
+          const list = lists.find((el) => el.id === bind.ids[0]);
+          if (!list) continue;
+          newView = {
+            ...newView,
+            live: newView.live.filter((el) => el.id !== list.cues[0].id),
+          };
+        }
+      }
+    }
+
+    setView(newView);
 
     return () => {
       document.removeEventListener('keydown', keyDown);
@@ -90,14 +101,15 @@ export const Viewer: FunctionalComponent = () => {
     } else if (view.live?.length > 0) {
       const allIds = new Map<number, Cue>();
       view.live.forEach((c) => c.ids.forEach((l) => allIds.set(l, c)));
+      const duration = Math.max(...view.live.map((c) => c.duration));
       const newLights: Light[] = liveLights.map((el) =>
         allIds.has(el.id)
           ? { ...el, color: allIds.get(el.id).color }
           : { ...el, color: [0, 0, 0] }
       );
-      fade({ to: [...newLights], from: liveLights }, 0);
+      fade({ to: [...newLights], from: liveLights }, duration);
     } else {
-      fade({ to: fillLights(), from: liveLights }, 0);
+      fade({ to: fillLights(), from: liveLights }, 100);
     }
   }, [view, controls.viewMode]);
 
